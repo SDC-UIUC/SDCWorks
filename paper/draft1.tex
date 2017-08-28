@@ -1,0 +1,361 @@
+\documentclass[9pt,conference, compsocconf]{IEEEtran}
+%\documentclass[a4paper,10pt]{article}
+%\usepackage[utf8x]{inputenc}
+%\usepackage{anysize}
+%\marginsize{2.5cm}{2.5cm}{2.5cm}{2.5cm}
+
+\usepackage[usenames,dvipsnames]{pstricks}
+\usepackage{epsfig}
+%\usepackage{pst-grad} % For gradients
+%\usepackage{pst-plot} % For axes
+
+\usepackage{palatino}
+\RequirePackage{ifthen}
+\usepackage{latexsym}
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{amssymb}
+\RequirePackage{xspace}
+\RequirePackage{graphics}
+\usepackage{xcolor}
+%\usepackage{fullpage}
+%\usepackage{schemabloc}
+%\RequirePackage{textcomp}
+\usepackage{keyval}
+%\usepackage{listings}
+\usepackage{xspace}
+\usepackage{mathrsfs}
+%\usepackage{textcomp}
+%\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsmath,amssymb,url,listings,mathrsfs}
+%\usepackage{pvs}
+%\usepackage{supertabular,alltt,latexsym}
+%\usepackage{multicol,multirow,epsfig}
+%\usepackage[dvips, usenames]{color}
+\usepackage{framed}
+\usepackage{lipsum}
+\usepackage{algorithmic}
+%\usepackage[dvipsnames]{color}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+\usepackage{setspace}
+
+\usepackage{flushend} % equalize columns on last page
+
+\definecolor{reddish}{rgb}{1,.8,0.8}
+\definecolor{blueish}{rgb}{0.8,.8,1}
+\definecolor{greenish}{rgb}{.8,1,0.8}
+\definecolor{yellowish}{rgb}{1,1,.20}
+
+\def\titlename{Synthesis, Ladder-diagrams, Manufacturing}
+
+\definecolor{webred}{rgb}{0.5,0,0}
+\definecolor{webblue}{rgb}{0,0,0.8}
+%\usepackage[pdftex,colorlinks,citecolor=webblue,linkcolor=webred]{hyperref}
+
+\renewcommand{\eqref}[1]{Equation~(\ref{eq:#1})}
+\newcommand{\eqlabel}[1]{\label{eq:#1}}
+\newcommand{\tabref}[1]{Table~\ref{table:#1}}
+\newcommand{\tablabel}[1]{\label{table:#1}}
+
+
+\let\oldthebibliography=\thebibliography
+\let\endoldthebibliography=\endthebibliography
+\renewenvironment{thebibliography}[1]{%
+   \begin{oldthebibliography}{#1}%
+     \setlength{\itemsep}{-.3ex}%}%
+     \footnotesize%
+}
+{%
+   \end{oldthebibliography}%
+}
+
+
+
+\include{prelude1}
+
+
+\begin{document}
+%opening
+\title{\titlename}
+
+\author{\IEEEauthorblockN{Sayan Mitra and ...}
+\IEEEauthorblockA{Coordinated Science Laboratory\\
+University of Illinois at Urbana-Champaign\\
+Urbana, IL 61801, USA\\
+Email: \{mitras\}@illinois.edu}
+}
+
+%\texttt{}
+\date{}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Motivate with the need for fast adaptation in manufacturing systems. Adaptation with respect to what? Changes in demand, product and processing specifications (e.g., drill 3 holes instead of 2, a part needs to finish is shorter time), parts supplied (e.g., the new blocks are of different size). Failures. Replacement with slightly different machines and parts. Updates and patches.
+
+Debugging ladder logic is easy (Filipe Lopez).
+
+The synthesis problem addressed here: 
+Given hardware configuration $H$, and given set of requirements $R$, our algorithm will automatically generate the ladder-logic program $P$, such that $P$ running on $H$ is guaranteed to meet the requirement $R$. 
+%
+Ideally, the algorithm will also give an output {\bf Fail\/}, if it is impossible to create a program $P$ that makes $H$ meet $R$.
+
+Variations of the above theme: generate program $P$ that is optimal with respect to some metric, e.g., minimized processing time for a given path. Minimizes changes with respect to a previous program $P'$ (patch $P'$). 
+
+Promise of synthesis in adaptation: automatic generation of correct by construction programs.  
+
+
+\section{Related Work}
+\label{sec:related}
+Synthesis for routers
+- Synthesis for SDN/network updates~\cite{McClurg:2015PLDI}. Main problem solved here is the avoidance of 2-phase updates.
+Key differentiator: data packets are mutable, i.e., packet headers can be used for routing. 
+
+- Arvind's work
+
+Synthesis for traffic lights~\cite{coogan2017formal}.
+Temporal logic.
+
+Lots of work on program synthesis and synthesis of controllers for mobile robots. These are probably less related.
+
+
+Formal verification of DES model of manufacturing system~\cite{ZhangKLMA13}.
+
+\section{Preliminaries}
+\label{sec:prelim}
+
+\subsection{Setup the manufacturing system}
+The overall system consist of a plant, a changing set of widgets moving through the plant and being operated on by the machines in the plant, and a controller orchestrating the movement and the operation. 
+
+Our {\em plant} is specified by a conveyance graph $G$ and a set of operation labels $L$. 
+A {\em conveyance graph\/} is an undirected $G =(V,E)$. Each vertex $v \in V$ is a {\em cell\/}. 
+%
+Each cell $v$ is labeled by a subset $\mathit{label}(v)$ of operation labels $L$ that can be performed by the machines in that cell. If $\ell \in \mathit{label}(v)$, then operation $\ell$ can be performed by some machine at cell $v$. 
+
+For example, one cell in the manufacturing floor could have a CNC machine $A$ which could do operations $A_1, A_2,A_3$ and a lathe $B$ which could do operations $B_1, B_2$. Then the vertex corresponding to this cell in the graph will be labeled by the set $\{A_1, A_2, A_3, B_1, B_2\}$. As we will see in Section~\ref{}, when a widget  appears in a cell, and the controller outputs a label $\ell$ for the cell, then the widget gets operated on by that label. That is, the state of the widget will change, specifically, a queue maintained in the widget will have $\ell$ enqueued. 
+
+There will be special cells corresponding to source, sink, and forks which do not perform operations. Sources have a single operation that produce a  new widget; sinks have a single operation that consumes widgets, and forks have operations that decide the placement of widgets on (possibly multiple) conveyors.  
+
+%
+%
+Each edge in $E$ corresponds to a conveyor.
+Conveyors may have length / capacity, and can be seen as a FIFO queue. Each conveyor can be controlled by the controller to move (in one of two directions).
+
+A {\em widget} $w$ is specified by a unique identifier $\mathit{w.id}$ and a list $\mathit{w.op}$ of labels indicating the sequence of operations performed on $w$. The list $\mathit{w.op}$ starts as empty, and as $w$ visits a cell at which $\ell$ is performed by the controller, $\ell$ gets appended to $\mathit{w.op}$.
+%
+We also have to define the position of $w$ in $G$. (how?)
+
+We have to define sensors: vector of positions or occupancy of all widgets in the system (?) 
+
+We have to define actuation: vector of commands sent to conveyors, machines, and distributors.
+For simplicity conveyors could be just 1,0,-1, for example.
+
+Define a control program: its a finite state machine mapping sensor input, current state to the actuator outputs and updated state. 
+This is the program that will be synthesized, as a ladder diagram.
+
+\subsection{Complete System}
+\label{sec:complte}
+The complete  closed-loop system is a discrete transition system (finite state) with the following components:
+The state has the following components:
+\begin{enumerate}[(i)]
+\item Set of widgets in the system, and the states of each widget;
+\item State of the controller, including the output labels being produced.
+\end{enumerate}
+The transitions 
+\begin{enumerate}[(i)]
+	\item Conveyors that are moving, move the widgets;
+	\item Widgets at the end of conveyors, get transferred to cells;
+	\item Cells doing operations update widget $\mathit{w.op}$;
+	\item Sensors update, controller computes new output;
+	\item 
+\end{enumerate}
+
+
+A {\em requirement\/} is a partially ordered set on $L$.
+
+\subsection{Example}
+
+
+\subsection{Problem statement}
+\label{sec:problem}
+Simple manufacturing.
+A system is said to meet a requirement $R$, if for every widget $w$ at a sink, $\mathit{w.op}$ is complete path in the requirement $R$. 
+
+Given a system specification and a requirement, synthesize the controller (ladder diagram) that meets the requirement.
+
+\section{Synthesis Algorithm}
+\label{sec:algo}
+
+\subsection{Analysis of Algorithm}
+
+\subsection{Implementation}
+
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Examples}
+\label{sec:examples}
+This section details three examples. Each example is defined by a graph, a list of operations performed the cells in the graph, and requirements that each widget must satisfy upon exiting the system.
+
+\subsubsection{Example 1} Single cell system
+\label{sec:example1}
+
+	Graph $G$:
+	\begin{center}
+		\begin{tikzpicture} 
+			[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+			\node[circle, fill=green] (So) at (-2, 0) {So};
+			\node (A) at (0, 0) {A};
+			\node[circle, fill=red!60] (Si) at (2, 0) {Si};
+			
+			\path (So) edge (A);
+			\path (A) edge (Si);
+		\end{tikzpicture}
+	\end{center}
+
+	Cell operations: \hfill
+	
+	$L := {a}$
+	\begin{itemize}
+		\item $A := {a}$
+	\end{itemize}
+	\hfill
+	
+	Requirements $R$:
+	\begin{center}
+		\begin{tikzpicture} 
+		[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+		\node (a) at (0, 0) {a};
+		\end{tikzpicture}
+	\end{center}
+
+\subsubsection{Example 2} Duplicate sequential system
+\label{sec:example2}
+
+	Graph $G$:
+	\begin{center}
+		\begin{tikzpicture} 
+			[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+			\node[circle, fill=green] (So) at (-4, 0) {So};
+			\node (A1) at (-2, 0) {A};
+			\node (A2) at (0, 0) {A};
+			\node (B) at (2, 0) {B};
+			\node[circle, fill=red!60] (Si) at (4, 0) {Si};
+			
+			\path (So) edge (A1);
+			\path (A1) edge (A2);
+			\path (A2) edge (B);
+			\path (B) edge (Si);
+		\end{tikzpicture}
+	\end{center}
+
+	Cell operations: \hfill
+	
+	$L := {a, b}$
+	\begin{itemize}
+		\item A $:= {a}$ 
+		\item B $:= {b}$
+	\end{itemize}
+	\hfill
+
+	Requirements $R$:
+	\begin{center}
+		\begin{tikzpicture} 
+		[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+		\node (a) at (-1, 0) {a};
+		\node (b) at (1, 0) {b};
+		
+		\path (a) edge[->] (b);
+		\end{tikzpicture}
+	\end{center}
+
+\subsubsection{Example 2} Forked system with duplicates
+\label{sec:example3}
+
+	Graph $G$:
+	\begin{center}
+		\begin{tikzpicture} 
+			[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+			\node[circle, fill=green] (So) at (-4, 0) {So};
+			\node (A1) at (-2, 1) {A};
+			\node (A2) at (-2, -1) {A};
+			\node (B) at (0, 0) {B};
+			\node (C) at (2, 1) {C};
+			\node (D) at (2, -1) {D};
+			\node[circle, fill=red!60] (Si) at (4, 0) {Si};
+			
+			\path (So) edge (A1);
+			\path (So) edge (A2);
+			\path (A1) edge (B);
+			\path (A2) edge (B);
+			\path (B) edge (C);
+			\path (B) edge (D);
+			\path (C) edge (Si);
+			\path (D) edge (Si);
+		\end{tikzpicture}
+	\end{center}
+
+	Cell operations: \hfill
+	
+	$L := {a, b, c, d}$
+	\begin{itemize}
+		\item A $:= {a}$
+		\item B $:= {b}$
+		\item C $:= {c}$
+		\item D $:= {d}$
+	\end{itemize}
+	\hfill
+	
+	Requirements $R$:
+	\begin{center}
+		\begin{tikzpicture} 
+			[scale=.8,auto=left,every node/.style={circle,fill=blue!20}]
+			\node (a) at (-2, 0) {a};
+			\node (b) at (0, 0) {b};
+			\node (c) at (2, 1) {c};
+			\node (d) at (2, -1) {d};
+			
+			\path (a) edge[->] (b);
+			\path (b) edge[->] (c);
+			\path (b) edge[->] (d);
+		\end{tikzpicture}
+	\end{center}
+
+\subsection{Simulations}
+\label{sec:factory}
+Simulations in Factory I/O demonstrating performance of synthesized controllers.
+
+\subsection{FischerTechnik}
+\label{sec:factory}
+Demonstration of automation.
+
+\section{Questions/Notes/Etc}
+	Potok:
+	\begin{enumerate}
+		\item In \ref{sec:prelim}, the system is defined as an undirected graph but are there any (dis)advantages to define it as a directed graph whose edges can change direction during system execution? (I will read related literature understand potential differences).
+		\item Positions of widgets can be tracked by the cells source they were generated, the cells they have visited, and the edges they have taken?
+		\item How high-level are we considering the systhesis to be? Would the algorithm generate the ladder logic for the individual cells or can we treat them as black boxes that have been verified?
+		\item Should sensors be considered to be cells as well with operations of scan/weight/detect? This wouldn't change the definitions too much and keep it largely the same.
+		\item The requirements will have to specify quite a few things to guarantee applicability to real-world. For example, the number of individual machines allowed on the floor.
+		\item I'm not familiar with synthesis algorithms so going out on a limb here. How do synthesis tools search the space of generating efficient systems? Just a random thought, but would using something like genetic algorithms make sense? After an mutation occurs, the algorithm could check paths satisfy the requirements to discard (potentially) searches.
+		\item As a starting point, it may be useful to not consider actuation and just have a directed graph(?)
+		\item Are there any guarantees on the system being fault tolerant or anything related to monitoring?
+		\item Would this require building a mini-simulator environment similar to the one discussed before factory-io?
+		\item In factory settings, there are machines that operate on items as they move along conveyors, how would such a system be modeled in this definition? Some ideas include: considering the external operating part as a single cell and edges leading into/out; consider the system as two conveyors with a cell that take 0 time to complete.
+		\item What type of manufacturing systems would this be targeting? From the definition it seems that widgets are processed sequentially on some path, but some factories process multiple widgets concurrently at essentially the same location on a path (think pea canning factory where a bunch of peas travel on line side-by-side). 
+	\end{enumerate}
+
+
+
+\bibliographystyle{IEEEtran}
+%\bibliographystyle{abbrv}
+\bibliography{sayan1}
+
+\end{document}
