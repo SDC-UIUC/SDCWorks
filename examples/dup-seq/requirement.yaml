@@ -1,0 +1,68 @@
+requirements:
+    # Valid
+    - requirement:
+        name: "Req1"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["A", "a"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["A"]]
+            - ["A", ["END"]]
+
+    # Valid
+    - requirement:
+        name: "Req2"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["B", "b"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["B"]]
+            - ["B", ["END"]]
+
+    # Valid
+    - requirement:
+        name: "Req3"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["A", "a"]
+            - ["B", "b"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["A"]]
+            - ["A", ["B"]]
+            - ["B", ["END"]]
+
+    # Valid
+    - requirement:
+        name: "Req4"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["A1", "a"]
+            - ["A2", "a"]
+            - ["B", "b"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["A1"]]
+            - ["A1", ["A2"]]
+            - ["A2", ["B"]]
+            - ["B", ["END"]]
+
+    # Invalid
+    - requirement:
+        name: "Req5"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["B", "b"]
+            - ["A", "a"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["B"]]
+            - ["B", ["A"]]
+            - ["A", ["END"]]

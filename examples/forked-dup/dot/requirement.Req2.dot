@@ -1,0 +1,8 @@
+graph {
+	INIT -- { A }
+	A -- { B }
+	B -- { C E }
+	C -- { END }
+	E -- { END }
+	END -- {  }
+}

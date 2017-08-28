@@ -1,0 +1,5 @@
+graph {
+	Source -- { A }
+	A -- { Sink }
+	Sink -- {  }
+}

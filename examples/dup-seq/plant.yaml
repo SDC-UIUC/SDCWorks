@@ -1,0 +1,47 @@
+cells:
+    - cell:
+        type: "source"
+        name: "Source"
+        operations:
+            - ["INIT", 5]
+
+    - cell:
+        type: "sink"
+        name: "Sink"
+        operations:
+            - ["END", 5]
+
+    - cell:
+        type: "cell"
+        name: "A1"
+        operations:
+            - ["a", 5]
+
+    - cell:
+        type: "cell"
+        name: "A2"
+        operations:
+            - ["a", 5]
+
+    - cell:
+        type: "cell"
+        name: "B"
+        operations:
+            - ["b", 15]
+
+connections:
+    - connection:
+        length: 5.0
+        endpoints: ["Source", "A1"]
+
+    - connection:
+        length: 5.0
+        endpoints: ["A1", "A2"]
+
+    - connection:
+        length: 5.0
+        endpoints: ["A2", "B"]
+
+    - connection:
+        length: 5.0
+        endpoints: ["B", "Sink"]

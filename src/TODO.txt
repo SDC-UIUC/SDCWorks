@@ -1,0 +1,19 @@
+-- Program the simulator.py function
+---- simulate: accepts a conveyance graph, requirements, and simulation strategy
+     and simulates system for a set time (this could be infinite until stopped
+     by user)
+---- Add widget tracking capabilities to Connection class (conveyors)
+---- Add widget queues, in-progress capabilities to Cell class
+---- Allow simulation time to be user defined
+
+-- Connection
+---- update: updates widgets on the connection
+---- Create variable for speed/velocity
+
+-- Cell
+---- send_widget: Function to send a widget to a specific connection
+---- update: updates widgets in the cell, cell queue, and status of the cell
+
+-- Conveyance graph functions
+---- Fix the check_requirement_feasibilities function to allow checking for more
+     than just unidirectional graphs (this may be ok for now)

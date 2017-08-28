@@ -1,0 +1,35 @@
+requirements:
+    # Valid
+    - requirement:
+        name: "Req1"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["A", "a"]
+            - ["B", "b"]
+            - ["C", "c"]
+            - ["D", "d"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["A", ["B"]]
+            - ["B", ["C", "D"]]
+            - ["C", ["END"]]
+            - ["D", ["END"]]
+
+    # Invalid
+    - requirement:
+        name: "Req2"
+        nodes:
+            - ["INIT", "INIT"]
+            - ["A", "a"]
+            - ["B", "b"]
+            - ["C", "c"]
+            - ["E", "e"]
+            - ["END", "END"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["A"]]
+            - ["A", ["B"]]
+            - ["B", ["C", "E"]]
+            - ["C", ["END"]]
+            - ["E", ["END"]]
