@@ -1,9 +1,0 @@
-graph {
-	Source -- { A2 A1 }
-	A2 -- { B }
-	A1 -- { B }
-	B -- { C D }
-	C -- { Sink }
-	D -- { Sink }
-	Sink -- {  }
-}

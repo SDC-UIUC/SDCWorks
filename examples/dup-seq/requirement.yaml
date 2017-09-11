@@ -3,66 +3,66 @@ requirements:
     - requirement:
         name: "Req1"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INSTANTIATE", "INSTANTIATE"]
             - ["A", "a"]
-            - ["END", "END"]
-        root: "INIT"
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
         edges:
-            - ["INIT", ["A"]]
-            - ["A", ["END"]]
+            - ["INSTANTIATE", ["A"]]
+            - ["A", ["TERMINATE"]]
 
     # Valid
     - requirement:
         name: "Req2"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INSTANTIATE", "INSTANTIATE"]
             - ["B", "b"]
-            - ["END", "END"]
-        root: "INIT"
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
         edges:
-            - ["INIT", ["B"]]
-            - ["B", ["END"]]
+            - ["INSTANTIATE", ["B"]]
+            - ["B", ["TERMINATE"]]
 
     # Valid
     - requirement:
         name: "Req3"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INSTANTIATE", "INSTANTIATE"]
             - ["A", "a"]
             - ["B", "b"]
-            - ["END", "END"]
-        root: "INIT"
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
         edges:
-            - ["INIT", ["A"]]
+            - ["INSTANTIATE", ["A"]]
             - ["A", ["B"]]
-            - ["B", ["END"]]
+            - ["B", ["TERMINATE"]]
 
     # Valid
     - requirement:
         name: "Req4"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INSTANTIATE", "INSTANTIATE"]
             - ["A1", "a"]
             - ["A2", "a"]
             - ["B", "b"]
-            - ["END", "END"]
-        root: "INIT"
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
         edges:
-            - ["INIT", ["A1"]]
+            - ["INSTANTIATE", ["A1"]]
             - ["A1", ["A2"]]
             - ["A2", ["B"]]
-            - ["B", ["END"]]
+            - ["B", ["TERMINATE"]]
 
     # Invalid
     - requirement:
         name: "Req5"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INSTANTIATE", "INSTANTIATE"]
             - ["B", "b"]
             - ["A", "a"]
-            - ["END", "END"]
-        root: "INIT"
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
         edges:
-            - ["INIT", ["B"]]
+            - ["INSTANTIATE", ["B"]]
             - ["B", ["A"]]
-            - ["A", ["END"]]
+            - ["A", ["TERMINATE"]]

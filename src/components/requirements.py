@@ -1,3 +1,15 @@
+from parser.parser import parse_requirements
+
+class Requirements:
+    def __init__(self, req_yaml):
+        # Parse requirement YAML
+        reqs_data = parse_requirements(req_yaml)
+
+        self.requirements = []
+        for req_data in reqs_data:
+            requirement = Requirement(*req_data)
+            self.requirements.append(requirement)
+
 class Requirement:
     def __init__(self, name, nodes, root, edges):
         self.name = name
@@ -61,10 +73,10 @@ class Requirement:
                     queue.append(next)
 
             next_names = [next.name for next in node.nexts]
-            next_str = "\t%s -- { %s }\n" % (node.name, " ".join(next_names))
+            next_str = "\t%s -> { %s }\n" % (node.name, " ".join(next_names))
             dot_str.append(next_str)
 
-        dot_str = "graph {\n" + "".join(dot_str) + "}"
+        dot_str = "strict digraph {\n" + "".join(dot_str) + "}"
         try:
             with open(dot_path, 'w') as dot_file:
                 dot_file.write(dot_str)

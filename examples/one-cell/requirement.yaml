@@ -2,9 +2,9 @@ requirements:
     - requirement:
         name: "Req1"
         nodes:
-            - ["INIT", "INIT"]
+            - ["INIT", "INSTANTIATE"]
             - ["A", "a"]
-            - ["END", "END"]
+            - ["END", "TERMINATE"]
         root: "INIT"
         edges:
             - ["INIT", ["A"]]

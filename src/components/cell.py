@@ -1,25 +1,28 @@
-# TODO define the repr and str methods to simplify life
+from components.genericcell import GenericCell
 
-class Cell:
-    def __init__(self, type, name, ops=None, conns=None):
+class Cell(GenericCell):
+    def __init__(self, type, name, ops=None, in_convs=None, out_convs=None):
+        super().__init__()
+
         self.type = type
         self.name = name
+
         if ops == None:
-            self.ops = []
+            self.ops = {}
         else:
             self.ops = ops
-        if conns == None:
-            self.conns = []
-        else:
-            self.conns = conns
+
+        self.input_convs = []
+        self.output_convs = []
 
     def get_nexts(self):
         nexts = []
-        for conn in self.conns:
-            for endpoint in conn.endpoints:
-                if endpoint != self:
-                    nexts.append(endpoint)
+        for conv in self.output_convs:
+            nexts.append(conv.output)
 
         return nexts
+
+    def update(self):
+        print("Updates cell")
 
 

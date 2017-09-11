@@ -41,35 +41,43 @@ cells:
         operations:
             - ["d", 5]
 
-connections:
-    - connection:
+conveyors:
+    - conveyor:
         length: 5.0
-        endpoints: ["Source", "A1"]
+        input: "Source"
+        output: "A1"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["Source", "A2"]
+        input: "Source"
+        output: "A2"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["A1", "B"]
+        input: "A1"
+        output: "B"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["A2", "B"]
+        input: "A2"
+        output: "B"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["B", "C"]
+        input: "B"
+        output: "C"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["B", "D"]
+        input: "B"
+        output: "D"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["C", "Sink"]
+        input: "C"
+        output: "Sink"
 
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["D", "Sink"]
+        input: "D"
+        output: "Sink"

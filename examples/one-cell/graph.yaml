@@ -2,14 +2,10 @@ cells:
     - cell:
         type: "source"
         name: "Source"
-        operations:
-            - ["INIT", 5]
 
     - cell:
         type: "sink"
         name: "Sink"
-        operations:
-            - ["END", 5]
 
     - cell:
         type: "cell"
@@ -17,11 +13,13 @@ cells:
         operations:
             - ["a", 5]
 
-connections:
-    - connection:
+conveyors:
+    - conveyor:
         length: 5.0
-        endpoints: ["Source", "A"]
+        input: "Source"
+        output: "A"
         
-    - connection:
+    - conveyor:
         length: 5.0
-        endpoints: ["A", "Sink"]
+        input: "A"
+        output: "Sink"

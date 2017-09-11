@@ -1,72 +1,64 @@
-# Consider combining all the components intno a single class
-
 from components.cell import Cell
-from components.connection import Connection
-from components.conveyancegraph import ConveyanceGraph
-from components.requirement import Requirement
+from components.conveyor import Conveyor
 import yaml
 
 import pdb
 
 DEBUG = False
 
-def parse_plant(plant_yaml):
+# TODO comment me
+def parse_graph(graph_yaml):
     # Read and parse YAML
     try:
-        with open(plant_yaml, 'r') as plant_file:
-            plant_info = plant_file.read()
+        with open(graph_yaml, 'r') as graph_file:
+            graph_info = graph_file.read()
     except:
-        raise EnvironmentError("Unable to open %s" % (plant_yaml))
+        raise EnvironmentError("Unable to open %s" % (graph_yaml))
 
-    plant_data = yaml.load(plant_info)
+    graph_data = yaml.load(graph_info)
 
     # Parse cells
-    if "cells" not in plant_data:
+    if "cells" not in graph_data:
         raise ValueError("No key 'cells'")
 
-    cells_dict = plant_data["cells"]
+    cells_dict = graph_data["cells"]
     if cells_dict == None:
         raise ValueError("Key 'cells' is empty")
 
-    cells = {}
+    cells = []
     for cell_dict in cells_dict:
-        name, cell = _parse_cell(cell_dict["cell"])
-        if name in cells:
-            raise ValueError("Duplicate name: %s" % (name))
-        cells[name] = cell
-        
-   # Parse connections
-    if "connections" not in plant_data:
-        raise ValueError("No key 'connections'")
+        cell = _parse_cell(cell_dict["cell"])
+        cells.append(cell)
 
-    conns_dict = plant_data["connections"]
-    if conns_dict == None:
-        raise ValueError("Key 'connections' is empty")
+    # Parse conveyors
+    if "conveyors" not in graph_data:
+        raise ValueError("No key 'conveyors'")
     
-    conns = {}
-    for conn_dict in conns_dict:
-        endpoints, conn = _parse_connection(conn_dict["connection"])
-        for endpoint in endpoints:
-            if endpoint in conns:
-                conns[endpoint].append(conn)
-            else:
-                conns[endpoint] = [conn]
+    convs_dict = graph_data["conveyors"]
+    if convs_dict == None:
+        raise ValueError("Key 'conveyors' is empty")
 
-    # Return conveyance graph
-    return ConveyanceGraph(cells, conns)
+    convs = []
+    for conv_dict in convs_dict:
+        conv = _parse_conveyor(conv_dict["conveyor"])
+        convs.append(conv)
+
+    return cells, convs
+
        
-def _parse_connection(conn_dict):
+def _parse_conveyor(conv_dict):
     # Check keys
-    keys = ["length", "endpoints"]
+    keys = ["length", "input", "output"]
     for key in keys:
-        if key not in conn_dict:
-            raise ValueError("No key '%s' in '%s'" % (key, conn_dict))
+        if key not in conv_dict:
+            raise ValueError("No key '%s' in '%s'" % (key, conv_dict))
 
     # Connection
-    length = conn_dict["length"]
-    endpoints = conn_dict["endpoints"]
+    length = conv_dict["length"]
+    input = conv_dict["input"]
+    output = conv_dict["output"]
 
-    return endpoints, Connection(length)
+    return Conveyor(input, output, length)
 
 def _parse_cell(cell_dict):
     # Check subset of keys
@@ -79,16 +71,14 @@ def _parse_cell(cell_dict):
     name = cell_dict["name"]
 
     # Cell
-    if "operations" not in cell_dict:
-        raise ValueError("No key 'operations' in %s" % (cell_dict))
-
     ops = {}
-    for op in cell_dict["operations"]:
-        op_name = op[0]
-        op_dur = op[1]
-        ops[op_name] = op_dur
+    if "operations"  in cell_dict:
+        for op in cell_dict["operations"]:
+            op_name = op[0]
+            op_dur = op[1]
+            ops[op_name] = op_dur
 
-    return name, Cell(type, name, ops)
+    return Cell(type, name, ops)
 
 def parse_requirements(req_yaml):
     # Read and parse YAML
@@ -128,5 +118,5 @@ def _parse_requirement(req_dict):
     root = req_dict["root"]
     edges = req_dict["edges"]
     
-    return Requirement(name, nodes, root, edges)
+    return name, nodes, root, edges
 

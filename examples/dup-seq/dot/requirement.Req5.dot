@@ -1,6 +1,0 @@
-graph {
-	INIT -- { B }
-	B -- { A }
-	A -- { END }
-	END -- {  }
-}
