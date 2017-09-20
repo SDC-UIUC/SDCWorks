@@ -1,17 +1,18 @@
 cells:
-    - cell:
-        type: "source"
+    - source:
         name: "Source"
-
-    - cell:
-        type: "sink"
-        name: "Sink"
+        spawn_time_type: "constant"
+        spawn_time_interval: 5
+        spawn_req_type: "round-robin"
 
     - cell:
         type: "cell"
         name: "A"
         operations:
             - ["a", 5]
+
+    - sink:
+        name: "Sink"
 
 conveyors:
     - conveyor:

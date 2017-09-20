@@ -1,9 +1,44 @@
-from components.conveyancegraph import ConveyanceGraph
-from components.requirements import Requirements
+#from components.conveyancegraph import ConveyanceGraph
+#from components.requirements import Requirements
+from simulator.conveyancegraph import ConveyanceGraph
+from simulator.requirements import Requirements
 from subprocess import call
 import os, yaml
 
+from generic.graph import *
+
 import pdb
+
+def test_graph_requirements():
+    # Paths
+    dir = "one-cell"
+    dir_path = os.path.join("../examples", dir)
+    dir_dot_path = os.path.join(dir_path, "dot")
+    dir_png_path = os.path.join(dir_path, "png")
+
+    req_path = os.path.join(dir_path, "requirement.yaml")
+    requirements = Requirements(req_path)
+    for i, requirement in enumerate(requirements.requirements):
+        req_file = "requirement.%s" % (requirement.name)
+        req_dot_path = os.path.join(dir_dot_path, req_file + ".dot")
+        req_png_path = os.path.join(dir_png_path, req_file + ".png")
+
+        requirement.generate_output_files(req_dot_path, req_png_path)
+
+def test_graph():
+    n1 = GraphNode("Source", label="Source")
+    n2 = GraphNode("A1", label="A")
+    n3 = GraphNode("Sink", label="Sink")
+
+    graph = Graph("One-Cell")
+
+    graph.add_graph_nodes(n1)
+    graph.add_graph_nodes([n2, n3])
+
+    graph.add_graph_edges(n1.name, [n2.name])
+    graph.add_graph_edges(n2.name, n3.name)
+
+    #graph.generate_output_files("test.dot", "test.png")
 
 def test_examples(idx=None):
     # Constants
@@ -37,9 +72,12 @@ def test_examples(idx=None):
         graph_png_path = os.path.join(dir_png_path, "graph.png")
 
         conv_graph = ConveyanceGraph(graph_path)
-        conv_graph.generate_graph_dot(graph_dot_path)
+        conv_graph.generate_output_files(graph_dot_path, graph_png_path)
 
-        call(["dot", graph_dot_path, "-Tpng", "-o" + graph_png_path])
+        #conv_graph.generate_graph_dot(graph_dot_path)
+        #call(["dot", graph_dot_path, "-Tpng", "-o" + graph_png_path])
+
+        return
 
         # Parse and visualize requirements
         req_path = os.path.join(dir_path, "requirement.yaml")
@@ -104,7 +142,10 @@ def get_graph_paths(dir):
 
 
 if "__main__" == __name__:
-    dirs_idx = [1]
+    #test_graph_requirements()
+    #test_graph()
+
+    dirs_idx = [0]
     test_examples(dirs_idx)
 
     #test_cycles()

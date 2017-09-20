@@ -1,8 +1,9 @@
-from components.genericcell import GenericCell
+from generic.graph import GraphNode
 
-class Cell(GenericCell):
-    def __init__(self, type, name, ops=None, in_convs=None, out_convs=None):
-        super().__init__()
+class Cell(GraphNode):
+    def __init__(self, name="", nexts=None, type="", ops=None):
+        GraphNode.__init__(name, nexts)
+        GenericCell
 
         self.type = type
         self.name = name

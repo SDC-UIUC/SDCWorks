@@ -35,6 +35,7 @@
 %\usepackage[dvips, usenames]{color}
 \usepackage{framed}
 \usepackage{lipsum}
+\usepackage{algorithm}
 \usepackage{algorithmic}
 %\usepackage[dvipsnames]{color}
 
@@ -126,6 +127,93 @@ Lots of work on program synthesis and synthesis of controllers for mobile robots
 
 
 Formal verification of DES model of manufacturing system~\cite{ZhangKLMA13}.
+
+\section{Modeling a Manufacturing System}
+
+	\subsection{Manufacturing System Abstraction}
+	A manufacturing system consists of a plant; a set of requirements detailing sequences of operations; a changing set of widgets moving through the plant; and a controller orchestrating the operations of machines and movement of widgets.
+	
+	The plant of a manufacturing system can be thought of as a floor plan that details the layouts of machines and the connections between them. A plant is specified by a directed graph $G = (V, E)$ and a set of operations $O$. 
+	
+	Each vertex $v \in V$ models a \emph{cell} that can perform a set of operations unto widget $o \subseteq O$. Cells represent either a single machine or a set of machines in the manufacturing floor plan. Additionally, there are special cells that correspond to sources, sinks, and forks. Sources have a single operation to produce new widgets, sinks have a single operation to consume widgets, and forks select the next conveyor a widget should be placed on when the path splits up.
+	
+	Each $e \in E$ models a uni-directional conveyor with a specified length and speed. A controller may set the speed of the conveyor to a pre-defined speed or 0. 
+	
+	Let $R$ be the set of requirements. Then $R$ is a partially ordered set on $O$. It specifies the sequences of operations that are performed on widgets flowing through the system.
+	
+	A widget \emph{w} models a physical good that is moving through a manufacturing system. Widgets are specified a unique identifier \emph{w.id}, a requirement \emph{w.req} $r \in R$, a sequence of operations, that have to be performed on it, and a empty list \emph{w.ops}. A widget is instantiated at a source cell and traverses $G$, the graph of the manufacturing system per the instructions issued by the controller. Whenever a widget visits a particular cell, an operation is performed on the widget and is appended to the \emph{w.ops}. When a widget reaches a sink cell, \emph{w.ops} is compared to \emph{w.req} for equality and the widget is removed from the manufacturing system.
+	
+	A controller for the plant is a program that controls the flow of widgets through $G$ such that each widget's \emph{w.req} is satisfied. A controller can do the following operations:
+	\begin{itemize}
+		\item Control the speed of conveyors (0 or max speed).
+		\item Move widgets from cells to conveyors and vice versa.
+		\item Order cells to perform operations.
+	\end{itemize}
+
+	\subsection{Example}
+		
+
+\section{Algorithms}
+
+	\subsection{Static}
+		COMPLETE ME
+		
+	\subsection{Dynamic}
+		Given $G$, the graph of the plant, and $R$, the set of requirements, the goal is to minimize some arbitrary cost function $C$. An example of such a cost function can be to maximize the throughput of widgets through the plant.
+		
+		\begin{algorithm}[H]
+			\caption{Dynamic Controller}
+			\begin{algorithmic}
+				\STATE \Input: $G = (V, E), R$
+				\STATE $G_r \gets \{\}$
+				\FOR {$r \in R$}
+					\IF {$\neg$ checkFeasibility($r, G$)}
+						\STATE return
+					\ENDIF
+					\STATE $G_r \gets G_r +$ generateDCG($r, G$)
+				\ENDFOR
+				\STATE % Fixme
+				\FOR {$v \in V$}
+					\STATE $v.weight \gets 0$
+				\ENDFOR
+				\STATE % Fixme
+				\WHILE {true}
+					\FOR {$g_r \in G_r$}
+						\STATE dijkstra($g_r, C$)
+					\ENDFOR
+					\WHILE {$\neg \exists w$ exit cell}
+						\STATE simulate($G$)
+					\ENDWHILE
+					
+					\FOR {$v \in V$}
+						\STATE update($v.weight$)
+					\ENDFOR
+				\ENDWHILE
+			\end{algorithmic}
+		\end{algorithm}
+	
+		The algorithm for the controller takes in as input:
+		\begin{itemize}
+			\item $G$, the graph of the plant
+			\item $R$, the set of requirements
+			\item $C$, a cost function
+		\end{itemize}
+	
+		For every requirement $r$ in $R$, the algorithm uses the \emph{checkFeasibility} function to check whether $G$ can actually satisfy $r$ or in other words, there exists a sequence of cells in $G$ that can complete all operations indicated by any path in $r$. If $r$ can be satisfied by $G$, then the \emph{generateDCG} subroutine generates a DAG $g_r$ which corresponds to all the paths in $G$ that satisfy $r$. Each node in $g_r$ references one of the nodes in $G$. Note that multiple nodes in $g_r$ may reference the same node in $G$.
+		
+		Next, the algorithm assigns weights to all the nodes in $G$ according to $C$.
+		
+		The algorithm then loops infinitely until a termination signal is sent to it or for a specified duration of time. In each iteration of the loop, Dijkstra's algorithm is run for each $g_r \in G_r$ to compute the shortest path from a source to a sink. The system is simulated until any widget in $G$ completes in operations in a cell and is moved from a cell to a conveyor. Finally, the weights of all the nodes in $G$ are updated according to $C$.
+		
+		% TODO detail all subroutines in the appendix 
+		All subroutines detailed in this algorithm are described in the Appendix. 
+
+	\subsection{Correctness}
+		The correctness of the algorithm depends subroutine \emph{generateDCG} because each widget with requirement $r$ traverses $G$ according to a path in a corresponding $g_r \in G_r$. Each path in $g_r$ specifies a path in $G$ that satisfies requirement $r$ which implies that any widget that traverses any path in $g_r$ will have all its operations satisfied.
+		
+	\subsection{Completeness}
+		Given a set of requirements $R$ such that each requirement $r$ is satisfied by $G$, the algorithm is able to handle any widget whose requirement is in $R$. Additionally, each widget is guaranteed to traverse the entire $G$ in finite time  because all operations $o \in O$ take a finite amount of time to complete, conveyors are of finite length and are pre-assigned a speed, and widgets have FIFO queues of finite capacity.  
+
 
 \section{Preliminaries}
 \label{sec:prelim}
@@ -336,21 +424,6 @@ Simulations in Factory I/O demonstrating performance of synthesized controllers.
 \label{sec:factory}
 Demonstration of automation.
 
-\section{Questions/Notes/Etc}
-	Potok:
-	\begin{enumerate}
-		\item In \ref{sec:prelim}, the system is defined as an undirected graph but are there any (dis)advantages to define it as a directed graph whose edges can change direction during system execution? (I will read related literature understand potential differences).
-		\item Positions of widgets can be tracked by the cells source they were generated, the cells they have visited, and the edges they have taken?
-		\item How high-level are we considering the systhesis to be? Would the algorithm generate the ladder logic for the individual cells or can we treat them as black boxes that have been verified?
-		\item Should sensors be considered to be cells as well with operations of scan/weight/detect? This wouldn't change the definitions too much and keep it largely the same.
-		\item The requirements will have to specify quite a few things to guarantee applicability to real-world. For example, the number of individual machines allowed on the floor.
-		\item I'm not familiar with synthesis algorithms so going out on a limb here. How do synthesis tools search the space of generating efficient systems? Just a random thought, but would using something like genetic algorithms make sense? After an mutation occurs, the algorithm could check paths satisfy the requirements to discard (potentially) searches.
-		\item As a starting point, it may be useful to not consider actuation and just have a directed graph(?)
-		\item Are there any guarantees on the system being fault tolerant or anything related to monitoring?
-		\item Would this require building a mini-simulator environment similar to the one discussed before factory-io?
-		\item In factory settings, there are machines that operate on items as they move along conveyors, how would such a system be modeled in this definition? Some ideas include: considering the external operating part as a single cell and edges leading into/out; consider the system as two conveyors with a cell that take 0 time to complete.
-		\item What type of manufacturing systems would this be targeting? From the definition it seems that widgets are processed sequentially on some path, but some factories process multiple widgets concurrently at essentially the same location on a path (think pea canning factory where a bunch of peas travel on line side-by-side). 
-	\end{enumerate}
 
 
 
