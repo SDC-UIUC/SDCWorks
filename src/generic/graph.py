@@ -4,8 +4,8 @@ import pydot
 import pdb
 
 class Graph:
-    def __init__(self, name):
-        self.root = None
+    def __init__(self, name, root=None):
+        self.root = root
         self.name = name
         self.node_dict = {}
 

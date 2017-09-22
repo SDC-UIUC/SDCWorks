@@ -18,14 +18,14 @@ class Requirement(Graph):
     def __init__(self, name="", nodes=None, root=None, edges=None):
         super().__init__(name)
 
-        self.root = root
-        
         # Add nodes
-        req_nodes = list(map(lambda n: RequirementNode(n[0], ops=n[1]), nodes))
+        req_nodes = list(map(lambda n: RequirementNode(n[0], op=n[1]), nodes))
         self.add_graph_nodes(req_nodes)
 
+        self.root = None
         if root not in self.node_dict:
             raise ValueError("Root node '%s' not in requirement graph" % (root))
+        self.root = self.node_dict[root]
 
         # Add edges
         if edges:
@@ -33,9 +33,9 @@ class Requirement(Graph):
                 self.add_graph_edges(edge[0], edge[1])
 
 class RequirementNode(GraphNode):
-    def __init__(self, name="", nexts=None, label="", ops=None):
+    def __init__(self, name="", nexts=None, label="", op=None):
         super().__init__(name, nexts)
 
         if label:
             self.attrs["label"] = label
-        self.ops = ops
+        self.op = op

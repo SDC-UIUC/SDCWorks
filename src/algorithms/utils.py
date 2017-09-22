@@ -1,100 +1,79 @@
-from parser.parser import parse_graph
 from copy import copy
-from uuid import uuid4
+from generic.graph import Graph, GraphNode
 
-import pdb
+def generate_all_feasible_paths(plant, requirements):
+    all_paths = []
+    for requirement in requirements:
+        req_paths = []
+        visited_cells = {}
+        sources = plant.cells["source"]
+        for source in sources:
+            paths = generate_feasible_paths(requirement.root, source, 
+                                            visited_cells, 0)
+            req_paths.extend(paths)
+        cg = ConveyanceGraph(requirement.name, req_paths)
+        all_paths.append(cg) 
 
-class ConveyanceGraph:
-    def __init__(self, graph_yaml):
-        """Builds a conveyance graph from the description provided in the input
-        file
-
-        Args:
-            graph_yaml (string): path to the YAML file with the graph
-                description           
-
-        """
-
-        self.sources = []
-        self.sinks = []
-
-        # Parse graph YAML
-        cells, convs = parse_graph(graph_yaml)
-
-        # Create dictionary of cells
-        cells_dict = {}
-        for cell in cells:
-            if cell.name in cells_dict:
-                # FIXME print out both the cells
-                raise ValueError("Duplicate name %s" % (name))
-
-            cells_dict[cell.name] = cell
-            if cell.type == "source":
-                cell.ops["INSTANTIATE"] = 0
-                self.sources.append(cell)
-            if cell.type == "sink":
-                cell.ops["TERMINATE"] = 0
-                self.sinks.append(cell)
-
-        # Create graph
-        for conv in convs:
-            if conv.input not in cells_dict:
-                raise ValueError("No cell with name %s" % (conv.input))
-            cell = cells_dict[conv.input]
-            cell.output_convs.append(conv)
-            conv.input = cell
-
-            if conv.output not in cells_dict:
-                raise ValueError("No cell with name %s" % (conv.output))
-            cell = cells_dict[conv.output]
-            cell.input_convs.append(conv)
-            conv.output = cell
-
-        
-    def generate_graph_dot(self, dot_path):
-        """Generates a conveyance graph encoded in the DOT langueage at
-        <dot_path>. The generated file can be run through the 'dot' command to
-        create an image file of the conveyance graph.
-
-        Args:
-            dot_path (string): path where the encoded conveyance graph will be
-                written
-
-        Examples: 
-            ConveyanceGraph.generate_graph_dot(<dot_path>)
-            >>> dot <dot_path> -Tpng -o<image_path>
-
-        """
-
-        dot_str = []
-        visited_cells = set()
-        queue = self.sources[:]
-
-        # BFS through graph
-        while len(queue) > 0:
-            cell = queue.pop(0)
-            if cell in visited_cells:
-                continue
-            visited_cells.add(cell)
-
-            nexts = cell.get_nexts()
-            queue.extend(nexts)
+    return all_paths
             
-            # Encode cell
-            nexts_names = [next.name for next in nexts]
-            nexts_str = "\t%s -> { %s }\n" % (cell.name, " ".join(nexts_names))
-            dot_str.append(nexts_str) 
+def generate_feasible_paths(req, cell, visited, num_ops):
+    # Check if cell visited
+    if cell in visited:
+        if visited[cell] == num_ops:
+            return [None]
+    visited[cell] = num_ops
 
-        # Write encoded graph to file
-        dot_str = "strict digraph {\n" + "".join(dot_str) + "}"
-        try:
-            with open(dot_path, 'w') as dot_file:
-                dot_file.write(dot_str)
-        except:
-            raise EnvironmentError("Unable to open %s" % (dot_path))
-                
+    # Check if end reached
+    if cell.type == "sink":
+        if req.op == "TERMINATE":
+            return [ConveyanceNode(cell, req.op)]
+        else:
+            return [None]
 
-    # FIXME change how this is done
+    # Check if requirement operation satisfied
+    req_nexts = []
+    req_sat = False
+    if req.op in cell.ops:
+        req_nexts.extend(req.get_nexts())
+        req_sat = True
+
+    # Iterate over all next requirements requirements
+    paths = []
+    for req_next in req_nexts:
+        visited_param = copy(visited)
+        num_ops_param = num_ops
+        skip_req = True
+        if not req_next is req:  
+            visited_param[cell] += 1
+            num_ops_param += 1
+            skip_req = False
+
+        for cell_next in cell.get_nexts(cells=True):
+            feasible_paths = generate_feasible_paths(req_next, cell_next, 
+                                                     visited_param,
+                                                     num_ops_param)
+
+            # Prepend current node to returned paths
+            for feasible_path in feasible_paths:
+                if not feasible_path:
+                    continue
+
+                if skip_req:
+                    cg_node = ConveyanceNode(cell, "PASS", skip_req,
+                                             feasible_path)
+                else:
+                    cg_node = ConveyanceNode(cell, req.op, skip_req,
+                                             feasible_path)
+                paths.append(cg_node)
+
+        return paths
+
+
+    
+
+
+
+   # FIXME change how this is done
     def check_requirements_feasibility(self, requirements):
         """Checks the feasibility of a list of requirements against the ConveyanceGraph
 
@@ -309,49 +288,20 @@ class ConveyanceGraph:
         return reqs_feasible, cs_node
 """
 
-class ConveyanceSubgraph():
-    def __init__(self, root):
-        self.root = root
+class ConveyanceGraph(Graph):
+    def __init__(self, name, root):
+        super().__init__(name, root)
 
-    def generate_subgraph_dot(self, dot_path):
-        dot_str = []
-        visited_nodes = set()
-        queue = [self.root]
-        
-        # BFS through graph
-        while len(queue) > 0:
-            node = queue.pop(0)
-            if node in visited_nodes:
-                continue
-            visited_nodes.add(node)
+class ConveyanceNode(GraphNode):
+    def __init__(self, ref, op, skip=False, nexts=None):
+        super().__init__(ref.name, nexts)
 
-            for next in node.nexts:
-                if next not in visited_nodes:
-                    queue.append(next)
-
-            next_names = [next.name for next in node.nexts]
-            next_node_str = []
-            for next in node.nexts:
-                next_node_str.append('"%s" [labels="%s"]' % (next.id, next.name))
-            next_node_str = " ".join(next_node_str)
-            #next_str = "\t%s -> { %s }\n" % (node.name, " ".join(next_names))
-            next_str = '\t{ "%s" [label="%s"] } -> { %s }\n' % (node.id, node.name, next_node_str)
-            dot_str.append(next_str)
-
-        dot_str = "strict digraph {\n" + "".join(dot_str) + "}"
-        try:
-            with open(dot_path, 'w') as dot_file:
-                dot_file.write(dot_str)
-        except:
-            raise EnvironmentError("Unable to open %s" % (dot_path))
-
-class ConveyanceSubgraphNode():
-    def __init__(self, ref, nexts=None):
+        #self.id = uuid4()
         self.ref = ref
-        self.id = uuid4()
-        self.name = ref.name
-        self.background_color = "white"
-        if nexts == None:
-            self.nexts = []
+        self.op = op
+        self.weight = 0
+
+        if not skip:
+            self.dot_attrs["fillcolor"] = "white"
         else:
-            self.nexts = nexts
+            self.dot_attrs["fillcolor"] = "gray"

@@ -1,10 +1,4 @@
-from components.cell import Cell
-from components.conveyor import Conveyor
 import yaml
-
-import pdb
-
-DEBUG = False
 
 # TODO comment me
 def parse_plant(plant_yaml):
@@ -115,7 +109,7 @@ def _parse_sink(sink_dict):
        
 def _parse_conveyor(conv_dict):
     # Check keys
-    keys = ["length", "input", "output"]
+    keys = ["length", "prev", "next"]
     for key in keys:
         if key not in conv_dict:
             raise ValueError("No key '%s' in '%s'" % (key, conv_dict))

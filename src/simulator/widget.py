@@ -6,6 +6,15 @@ class Widget:
         self.requirement = requirement
         self.cur_req = requirement.root
 
+    def __str__(self):
+        str = (
+            "Widget: " + self.id.urn[9:] + ", "
+            "requirement: " + self.requirement.name + ", "
+            "current op: " + self.cur_req.ops + "\n"
+        )
+
+        return str
+
     def select_next_op(self, req_name):
         selected_next = False
         for next in self.cur_req.get_nexts():

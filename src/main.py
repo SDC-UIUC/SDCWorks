@@ -20,6 +20,7 @@ def usage():
 
 def main(dir_idx=None):
     algorithms = {
+            "random": random.Random,
             "spf": spf.SPF,
     }
     algo_key = None
@@ -59,11 +60,13 @@ def main(dir_idx=None):
     plant = Plant(plant_yaml)
     requirements = Requirements(requirements_yaml)
 
-    algorithm = algorithms[algo_key](requirements)
+    algorithm = algorithms[algo_key](plant, requirements)
     simulator = Simulator(plant, requirements, algorithm, directory)
 
     # Simulate system
-
+    END_TIME = 1
+    DELTA_TIME = 1
+    simulator.simulate(END_TIME, DELTA_TIME)
 
 if __name__ == "__main__":
     dir_idx = 0

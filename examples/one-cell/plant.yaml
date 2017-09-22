@@ -17,10 +17,10 @@ cells:
 conveyors:
     - conveyor:
         length: 5.0
-        input: "Source"
-        output: "A"
+        prev: "Source"
+        next: "A"
         
     - conveyor:
         length: 5.0
-        input: "A"
-        output: "Sink"
+        prev: "A"
+        next: "Sink"
