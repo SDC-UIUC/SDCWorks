@@ -9,7 +9,7 @@ class Algorithm(ABC):
         self.plant = plant
         self.requirements = requirements
 
-        self.reqs_paths = self.generate_all_feasible_paths()
+        #self.reqs_paths = self.generate_all_feasible_paths()
 
     @abstractmethod
     def initialize_routing_tables(self):
@@ -95,7 +95,7 @@ class RequirementPath(Graph):
         super().__init__(name, root)
 
 class RequirementPathNode(GraphNode):
-    def __init__(self, ref, next, op, skip=False):
+    def __init__(self, ref, next, op):
         super().__init__(ref.name)
 
         self.ref = ref
@@ -104,7 +104,7 @@ class RequirementPathNode(GraphNode):
         self.op = op
         self.weight = 0
 
-        if not skip:
+        if not op is "PASS":
             self.dot_attrs["fillcolor"] = "white"
         else:
             self.dot_attrs["fillcolor"] = "ivory4"

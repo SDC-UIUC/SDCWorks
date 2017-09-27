@@ -69,7 +69,6 @@ class Plant(Graph):
         node_control = self._control_table[node_name]
         node_control[key] = value
 
-    # FIXME to return data instead
     def update(self, delta_time, logging=True):
         queue = deque()
         visited = set()

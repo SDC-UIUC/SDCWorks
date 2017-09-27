@@ -3,7 +3,6 @@ import pydot
 
 import pdb
 
-# FIXME naming of things in the future
 class Graph:
     def __init__(self, name, root=None):
         self.root = root
@@ -24,9 +23,10 @@ class Graph:
         if isinstance(nodes, GraphNode):
             nodes = [nodes]
 
-        if not all(isinstance(node, GraphNode) for node in nodes):
-            err_str = "'%s' is not of type 'GraphNode" % (node)
-            raise TypeError(err_str)
+        for node in nodes:
+            if not isinstance(node, GraphNode):
+                err_str = "Node %s is not of type GraphNode" % (node)
+                raise TypeError(err_str)
 
         # Add nodes to graph
         for node in nodes:
@@ -34,7 +34,7 @@ class Graph:
                 raise ValueError("graph_node '%s' is already in graph '%s'" %
                     (node, self.node_dict))
 
-            self.node_dict[node.id]=  node
+            self.node_dict[node.id] = node
             self._add_dot_node(node)
 
     def _add_dot_edge(self, node, edge):
@@ -45,9 +45,21 @@ class Graph:
         if isinstance(edges, GraphNode):
             edges = [edges]
 
-        if not all(isinstance(edge, GraphNode) for edge in edges):
-            err_str = "'%s' is not of type 'String'" % (edge)
-            raise TypeError(err_str)
+        for edge in edges:
+            if not isinstance(edge, GraphNode):
+                err_str = "Edge %s is not of type GraphNode" % (edge)
+                raise TypeError(err_str)
+
+        # Check if node/edges added to graph
+        if not node.id in self.node_dict:
+            err_str = "Node %s has not been added to graph" % (node)
+            raise KeyError(err_str)
+
+        for edge in edges:
+            if not edge.id in self.node_dict:
+                err_str = "Edge %s has not been added to graph" % (edge)
+                raise KeyError(err_str)
+
 
         for edge in edges:
             node.add_nexts(edge)
@@ -93,14 +105,9 @@ class GraphNode:
             prevs = [prevs]
         self._prevs.extend(prevs)
 
-    # FIXME maybe (?)
     def get_nexts(self):
-        if not self._nexts:
-            return []
         return self._nexts
 
     def get_prevs(self):
-        if not self._prevs:
-            return []
         return self._prevs
 

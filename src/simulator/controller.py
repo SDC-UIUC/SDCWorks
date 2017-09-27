@@ -12,9 +12,9 @@ class Controller():
         network.add_dispatch_command("controller", "enqueue",
             self.notify_enqueue)
 
-
+    # TODO source_id is not used for now
     def notify_instantiation(self, widget_id, req, source_id):
-        req_ptr = self._control_table[req][source_id]
+        req_ptr = self._control_table[req]
 
         widget = VirtualWidget(widget_id, req, req_ptr)
         self.widgets[widget.id] = widget
