@@ -20,6 +20,7 @@ def usage():
 
 def main(dir_idx=None):
     algorithms = {
+            "first": first.First,
             "random": random.Random,
             "spf": spf.SPF,
     }

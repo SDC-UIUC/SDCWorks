@@ -16,11 +16,11 @@ cells:
 
 conveyors:
     - conveyor:
-        length: 5.0
-        prev: "Source"
-        next: "A"
+        length: 5
+        prev: ["Source"]
+        next: ["A"]
         
     - conveyor:
-        length: 5.0
-        prev: "A"
-        next: "Sink"
+        length: 5
+        prev: ["A"]
+        next: ["Sink"]

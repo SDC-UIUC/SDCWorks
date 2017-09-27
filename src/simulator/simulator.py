@@ -2,7 +2,7 @@ from copy import copy
 from datetime import datetime
 from simulator.plant import Plant
 from simulator.requirements import Requirements
-import os
+import os, sys
 
 import pdb
 
@@ -37,16 +37,18 @@ class Simulator:
             req_png_path = os.path.join(self.png_dir, req_file + ".png")
             requirement.generate_output_files(req_dot_path, req_png_path)
 
-        # FIXME
         # Algorithm output
-        for path in algorithm.paths:
-            path_file = "path-%s" % (path.name)
-            path_dot_path = os.path.join(self.dot_dir, path_file + ".dot")
-            path_png_path = os.path.join(self.png_dir, path_file + ".png")
-            path.generate_output_files(path_dot_path, path_png_path)
+        for req_paths in algorithm.reqs_paths:
+            req_paths_file = "path-%s" % (req_paths.name)
+            req_paths_dot_path = os.path.join(self.dot_dir, req_paths_file + ".dot")
+            req_paths_png_path = os.path.join(self.png_dir, req_paths_file + ".png")
+            req_paths.generate_output_files(req_paths_dot_path, req_paths_png_path)
 
         # Check if plant satisfies requirements
         self._check_requirements_feasibilities()
+
+        # Update plant's control table
+        self.algorithm.initialize_routing_tables()
 
         # FIXME edit this 
         for source in self.plant.cells["source"]:
@@ -72,6 +74,7 @@ class Simulator:
             raise AssertionError("The following requirements are infeasible: " +
                     err_str)
                     
+    # FIXME change visited to Counter type
     def _check_requirement_feasibility(self, req, cell, visited, num_ops):
         # Check if cell visited 
         if cell in visited:
@@ -87,10 +90,9 @@ class Simulator:
                 return False
 
         # Check if requirement operation satisfied
-        if req.op in cell.ops:
+        req_nexts = [req]
+        if not cell.type is "conv" and req.op in cell.ops:
             req_nexts = req.get_nexts()
-        else:
-            req_nexts = [req]
 
         # Iterate over all next requirements
         reqs_feasible = True
@@ -103,7 +105,7 @@ class Simulator:
 
             # Iterate over all next cells
             req_feasible = False
-            for cell_next in cell.get_nexts(cells=True):
+            for cell_next in cell.get_nexts():
                 check_feasible = \
                     self._check_requirement_feasibility(req_next, cell_next, 
                                                         visited_param,
@@ -123,7 +125,7 @@ class Simulator:
 
         time = 0
         while (time + delta_time <= end_time):
-            log_str = self.plant.update(delta_time, self.log_dir)
+            log_str = self.plant.update(delta_time)
             time += delta_time
 
             # Write log to file

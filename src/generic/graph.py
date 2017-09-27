@@ -3,6 +3,7 @@ import pydot
 
 import pdb
 
+# FIXME naming of things in the future
 class Graph:
     def __init__(self, name, root=None):
         self.root = root
@@ -33,7 +34,7 @@ class Graph:
                 raise ValueError("graph_node '%s' is already in graph '%s'" %
                     (node, self.node_dict))
 
-            self.node_dict[node.name]=  node
+            self.node_dict[node.id]=  node
             self._add_dot_node(node)
 
     def _add_dot_edge(self, node, edge):
@@ -41,35 +42,65 @@ class Graph:
    
     def add_graph_edges(self, node, edges):
         # Check next type
-        if isinstance(edges, str):
+        if isinstance(edges, GraphNode):
             edges = [edges]
 
-        if not all(isinstance(edge, str) for edge in edges):
+        if not all(isinstance(edge, GraphNode) for edge in edges):
             err_str = "'%s' is not of type 'String'" % (edge)
             raise TypeError(err_str)
 
         for edge in edges:
-            self.node_dict[node].nexts.append(self.node_dict[edge])
-            self._add_dot_edge(node, edge)
+            node.add_nexts(edge)
+            edge.add_prevs(node)
+            self._add_dot_edge(node.id, edge.id)
                     
     def generate_output_files(self, dot_path, png_path):
         self.graph_dot.write_raw(dot_path)
         self.graph_dot.write_png(png_path)
 
 class GraphNode:
-    def __init__(self, name="", nexts=None):
+    def __init__(self, name="", label=""):
         self.name = name
-        self.dot_attrs =  { "name": name }
+        self.id = str(uuid4())
+        self.label = name
+        if  label:
+            self.label = label
 
-        if nexts == None:
-            self.nexts = []
-        else:
-            self.nexts = nexts
+        self.dot_attrs =  { 
+            "name": self.id,
+            "label": self.label,
+        }
+        self._nexts = None
+        self._prevs = None
 
     def __repr__(self):
         repr = "<%s, %r>" % (self.__class__, self.__dict__)
         return repr
 
+    def add_nexts(self, nexts):
+        if not self._nexts:
+            self._nexts = []
+
+        if isinstance(nexts, GraphNode):
+            nexts = [nexts]
+        self._nexts.extend(nexts)
+
+    def add_prevs(self, prevs):
+        if not self._prevs:
+            self._prevs = []
+
+        if isinstance(prevs, GraphNode):
+            prevs = [prevs]
+        self._prevs.extend(prevs)
+
+    # FIXME maybe (?)
     def get_nexts(self):
-        return self.nexts
+        if not self._nexts:
+            return []
+        return self._nexts
+
+    def get_prevs(self):
+        if not self._prevs:
+            return []
+        return self._prevs
 

@@ -1,36 +1,46 @@
 from abc import ABC, abstractmethod
+from collections import deque
 from generic.graph import GraphNode
 from simulator.widget import Widget
 
 import sys
 
+# FIXME make most class variables be private
+
 # Consider making GraphNode a parent class of this one rather than doing what I
 # am doing
-# Move this to generics
-class GenericCell(ABC):
+# Move this to generics 
+class GenericCell(ABC, GraphNode):
+    def __init__(self, name, type, label=""):
+        super().__init__(name, label)    
+        
+        self.type = type
+        self.queue = None
+        self.states = ["idle", "operational", "waiting"]
+
+        self.network = None
+
     @abstractmethod
     def log(self):
         pass
 
     @abstractmethod
-    def update(self, delta_time):
+    def update(self, delta_time, control_table):
         pass
 
+    """
+    @abstractmethod
+    def enqueue_widget(self):
+        pass
+    """
 
-class Cell(GenericCell, GraphNode):
-    def __init__(self, name="", ops=None):
-        super().__init__(name)
-
-        self.type = "cell"
+class Cell(GenericCell):
+    def __init__(self, name, ops=None):
+        super().__init__(name, "cell")
 
         if ops is None:
             ops = {}
         self.ops = ops
-
-        self.nexts = []
-        self.conv_nexts = []
-        self.prevs = []
-        self.conv_prevs = []
 
         # Storage
         self._real_queue_capacity = 0
@@ -43,18 +53,9 @@ class Cell(GenericCell, GraphNode):
 
         # Widget
         self.cur_widget = None
-
-    # Add function to add an output/input conv
-
-    # FIXME
-    def get_nexts(self, cells=False):
-        if not cells:
-            return self.conv_nexts
-        else:
-            return self.nexts
-
+    
     # TODO
-    def update(self, delta_time):
+    def update(self, delta_time, control_table):
         self._cur_time += delta_time
         
 
@@ -66,35 +67,71 @@ class Cell(GenericCell, GraphNode):
 
         return log_str
 
+    # FIXME rename to enqueue_widget
     def move_widget(self):
         if not self.widget:
             return
 
-class Conveyor(GenericCell, GraphNode):
-    def __init__(self, name="", length=0.0, prev=None, next=None):
-        super().__init__(name)
+class Conveyor(GenericCell):
+    def __init__(self, name="", length=0):
+        super().__init__(name, "conv", "Conveyor")
 
-        self.length = length
-        self.prevs = [prev]
-        self.nexts = [next]
+        self.dot_attrs.update({
+            "style": "filled, rounded",
+            "shape": "box",
+            "fillcolor": "deepskyblue",
+        })
 
-    def update(self, delta_time):
-        pass
+        self.queue = deque([None] * length, maxlen=length)
+
+    def enqueue_widget(self, widget):
+        if not isinstance(self.queue[-1], Widget):
+            self.queue[-1] = widget
+            return True
+        else:
+            return False
+
+    def update(self, delta_time, control_table):
+        if isinstance(self.queue[0], Widget):
+            widget = self.queue[0]
+            op, next = widget.get_op_key()
+        else:
+            self.queue.append(None)
+            return
+
+        enqueued = next.enqueue(widget)
+        if enqueued:
+            self.queue.popleft()
+            self.state = "operational"
+            self.queue.append(None)
+        else:
+            self.state = "idle"
 
     def log(self):
+        queue_str = "Queue: [ "
+        for widget in self.queue:
+            if isinstance(widget, Widget):
+                queue_str += widget.id + " "
+            else:
+                queue_str += "None "
+
         log_str = (
             "Conveyor\n----------\n"
             "Name: " + self.name + "\n"
+            "" + queue_str + "\n"
         )
 
         return log_str
 
 
-class Source(GenericCell, GraphNode):
-    def __init__(self, name="", ops=None, spawn_attrs=None):
-        super().__init__(name)
+class Source(GenericCell):
+    def __init__(self, name, ops=None, spawn_attrs=None):
+        super().__init__(name, "source")
 
-        self.type = "source"
+        self.dot_attrs.update({
+            "style": "filled",
+            "fillcolor": "green",
+        })
 
         if ops is None:
             ops = {}
@@ -103,14 +140,10 @@ class Source(GenericCell, GraphNode):
         self._cur_time = 0
         self._outputs = []
         self._requirements = None
-
-        self.nexts = []
-        self.conv_nexts = []
-        self.prevs = None
-        self.prev_nexts = None
-
+        
         # Widget variables
-        self._widget = None
+        maxlen = 1 # FIXME
+        self.queue = deque(maxlen=maxlen)
 
         # Spawn variables
         self._last_spawn_time = -sys.maxsize - 1
@@ -125,16 +158,18 @@ class Source(GenericCell, GraphNode):
     def set_requirements(self, requirements):
         self.requirements = requirements
 
+    """
     def get_nexts(self, cells=False):
         if not cells:
             return self.conv_nexts
         else:
             return self.nexts
+    """
 
     def log(self):
         widget_str = "Widget: None"
-        if self._widget:
-            widget_str = str(self._widget)
+        if len(self.queue) > 0:
+            widget_str = str(self.queue[0])
 
         log_str = (
             "Source\n----------\n"
@@ -144,14 +179,33 @@ class Source(GenericCell, GraphNode):
 
         return log_str
 
-    def update(self, delta_time):
+    # FIXME need to check for states
+    def update(self, delta_time, control_table):
         self._cur_time += delta_time
 
-        # Check if widget present
-        if self._widget:
+        widget = self._spawn_widget()
+        if not widget:
             return
+        self.queue.append(widget)
+        
+        # Get control actions
+        widget = self.queue[0]
+        op, next = self._widget.get_op_key()
 
+        # FIXME works for a source with one widget but this has to be fixed for
+        # multiple widgets because the work time won't be self._last_spawn_time
+        op_time = self.ops[op]
+        if self._cur_time - self._last_spawn_time >= op_time:
+            enqueued = next.enqueue_widget(widget)
+            if enqueued:
+                self.queue.popleft()
+
+    # FIXME this can be renamed to enqueue_widget()
+    def _spawn_widget(self):
         # Check if spawn widget
+        if len(self.queue) == self.queue.maxlen:
+            return None
+
         spawn = False
         if self._spawn_time_type == "constant":
             if self._cur_time - self._last_spawn_time >= self._spawn_time:
@@ -164,15 +218,22 @@ class Source(GenericCell, GraphNode):
             self._widget = Widget(requirement)
             self._spawn_req_idx = (self._spawn_req_idx + 1) % len(self.requirements)
 
-    def move_widget(self):
+        return Widget(requirement)
+
+    """
+    def enqueue_widget(self):
         if not self.widget:
             return
+    """
         
-class Sink(GenericCell, GraphNode):
-    def __init__(self, name="", ops=None):
-        super().__init__(name)
+class Sink(GenericCell):
+    def __init__(self, name, ops=None):
+        super().__init__(name, "sink")
 
-        self.type = "sink"
+        self.dot_attrs.update({
+            "style": "filled",
+            "fillcolor": "red",
+        })
 
         if ops is None:
             ops = {}
@@ -183,14 +244,8 @@ class Sink(GenericCell, GraphNode):
         # Widget variables
         self._widget = None
         self._del_widget = None
-
-        self.nexts = None
-        self.conv_nexts = None
-        self.prevs = []
-        self.conv_prevs = []
-
-
-    def update(self, delta_time):
+        
+    def update(self, delta_time, control_table):
         self.cur_time += delta_time
 
         # Terminate widget

@@ -32,7 +32,7 @@ class Plant(Graph):
         }
         self.cells_dict = {}
 
-        self.conv_list = []
+        self._control_table = {}
 
         # Parse graph YAML
         parsed_cells, parsed_convs = parse_plant(plant_yaml)
@@ -45,43 +45,29 @@ class Plant(Graph):
                 self.cells_dict[cell.name] = cell
                 self.cells[type].append(cell)
                 self.add_graph_nodes(cell)
-        
-        #pdb.set_trace()
+                self._control_table[cell.id] = {}
 
         # Add conveyors to plant
         for conv_datum in parsed_convs:
+            prevs = conv_datum.pop("prev")
+            nexts = conv_datum.pop("next")
             conv = Conveyor(**conv_datum)
-            self.conv_list.append(conv)    
+            self.add_graph_nodes(conv)
+            self._control_table[conv.id] = {}
 
-            # Connect conveyor input
-            prev = conv.prevs[0]
-            cell_prev = self.cells_dict[prev]
-            cell_prev.conv_nexts.append(conv)
-            conv.prevs = [cell_prev]
+            # Connect conveyor previous
+            for prev in prevs:
+                prev = self.cells_dict[prev]
+                self.add_graph_edges(prev, conv)
 
-            # Connect conveyor output
-            next = conv.nexts[0]
-            cell_next = self.cells_dict[next]
-            cell_next.conv_prevs.append(conv)
-            conv.nexts = [cell_next]
-
-            self.add_graph_edges(cell_prev.name, cell_next.name)
-
-            """
-            for i, prev in enumerate(conv.prevs):
-                cell_prev = self.cells_dict[prev]
-                cell_prev.nexts.append(conv)
-                conv.prevs[i] = cell_prev
-
-            for i, next in enumerate(conv.nexts):
-                cell_next = self.cells_dict[next]
-                cell_next.prevs.append(conv)
-                conv.nexts[i] = cell_next
-
-            for prev in conv.prevs:
-                for next in conv.nexts:
-                    self.add_graph_edges(prev, next)
-            """
+            # Connect conveyor next
+            for next in nexts:
+                next = self.cells_dict[next]
+                self.add_graph_edges(conv, next)
+                
+    def update_control_table(self, node_name, key, value):
+        node_control = self._control_table[node_name]
+        node_control[key] = value
 
     # FIXME to return data instead
     def update(self, delta_time, logging=True):
@@ -104,7 +90,8 @@ class Plant(Graph):
                     continue
                 visited.add(cell)
 
-                cell.update(delta_time)
+                cell_control_table = self._control_table[cell.id]
+                cell.update(delta_time, cell_control_table)
 
                 # Log cell data
                 if logging:
@@ -112,9 +99,8 @@ class Plant(Graph):
                     logs.append(log)
 
                 # Append prev cells to queue
-                if cell.prevs:
-                    for prev in cell.prevs:
-                        queue.append(prev)
+                for prev in cell.get_prevs():
+                    queue.append(prev)
 
         log_str = None
         if logging:

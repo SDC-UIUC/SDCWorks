@@ -2,13 +2,13 @@ from uuid import uuid4
 
 class Widget:
     def __init__(self, requirement):
-        self.id = uuid4()
+        self.id = str(uuid4())
         self.requirement = requirement
         self.cur_req = requirement.root
 
     def __str__(self):
         str = (
-            "Widget: " + self.id.urn[9:] + ", "
+            "Widget: " + self.id + ", "
             "requirement: " + self.requirement.name + ", "
             "current op: " + self.cur_req.ops + "\n"
         )
