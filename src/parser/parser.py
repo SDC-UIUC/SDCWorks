@@ -75,6 +75,7 @@ def _parse_cell(cell_dict):
     return cell_attrs
 
 def _parse_source(source_dict):
+    """
     keys = ["name", "spawn_time_type", "spawn_req_type"]
     for key in keys:
         if key not in source_dict:
@@ -96,7 +97,15 @@ def _parse_source(source_dict):
         "spawn_attrs": spawn_attrs,
         "ops": { "INSTANTIATE": 0 }
     }
-    return source_attrs
+    """
+
+    keys = ["name"]
+    for key in keys:
+        if key not in source_dict:
+            raise KeyError("No key '%s' in %s" % (key, source_dict))
+
+    source_dict["ops"] = { "INSTANTIATE": 0 }
+    return source_dict
 
 def _parse_sink(sink_dict):
     keys = ["name"]

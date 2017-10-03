@@ -70,6 +70,7 @@ class Graph:
         self.graph_dot.write_raw(dot_path)
         self.graph_dot.write_png(png_path)
 
+# FIXME make _nexts/_prevs readonly but can change it with add_prev/next
 class GraphNode:
     def __init__(self, name="", label=""):
         self.name = name
@@ -82,25 +83,19 @@ class GraphNode:
             "name": self.id,
             "label": self.label,
         }
-        self._nexts = None
-        self._prevs = None
+        self._nexts = []
+        self._prevs = []
 
     def __repr__(self):
         repr = "<%s, %r>" % (self.__class__, self.__dict__)
         return repr
 
     def add_nexts(self, nexts):
-        if not self._nexts:
-            self._nexts = []
-
         if isinstance(nexts, GraphNode):
             nexts = [nexts]
         self._nexts.extend(nexts)
 
     def add_prevs(self, prevs):
-        if not self._prevs:
-            self._prevs = []
-
         if isinstance(prevs, GraphNode):
             prevs = [prevs]
         self._prevs.extend(prevs)

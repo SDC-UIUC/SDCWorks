@@ -11,9 +11,8 @@ import os
 
 import pdb
 
-# FIXME Rename this to Plant and rename ConveyanceSubgraph to ConveyanceGraph
 class Plant(Graph):
-    def __init__(self, plant_yaml):
+    def __init__(self, plant_yaml, network):
         """Builds a conveyance graph from the description provided in the input
         file
 
@@ -24,6 +23,7 @@ class Plant(Graph):
         """
 
         super().__init__("Plant")
+        self.network = network
 
         self.cells = {
             "source": [],
@@ -32,8 +32,6 @@ class Plant(Graph):
         }
         self.cells_dict = {}
 
-        self._control_table = {}
-
         # Parse graph YAML
         parsed_cells, parsed_convs = parse_plant(plant_yaml)
 
@@ -41,19 +39,17 @@ class Plant(Graph):
         cell_init = { "source": Source, "cell": Cell, "sink": Sink }
         for type, cell_data in parsed_cells.items():
             for cell_datum in cell_data:
-                cell = cell_init[type](**cell_datum)
+                cell = cell_init[type](network=network, **cell_datum)
                 self.cells_dict[cell.name] = cell
                 self.cells[type].append(cell)
                 self.add_graph_nodes(cell)
-                self._control_table[cell.id] = {}
 
         # Add conveyors to plant
         for conv_datum in parsed_convs:
             prevs = conv_datum.pop("prev")
             nexts = conv_datum.pop("next")
-            conv = Conveyor(**conv_datum)
+            conv = Conveyor(network=network, **conv_datum)
             self.add_graph_nodes(conv)
-            self._control_table[conv.id] = {}
 
             # Connect conveyor previous
             for prev in prevs:
@@ -64,12 +60,84 @@ class Plant(Graph):
             for next in nexts:
                 next = self.cells_dict[next]
                 self.add_graph_edges(conv, next)
-                
-    def update_control_table(self, node_name, key, value):
-        node_control = self._control_table[node_name]
-        node_control[key] = value
 
-    def update(self, delta_time, logging=True):
+        # Initialize network with plant function
+        network.add_dispatch_command("plant", "query_cells",
+            self.query_cells)
+                
+    def check_feasibilities(self, requirements):
+        # Check each requirement for feasibility
+        infeasible = []
+        for requirement in requirements:
+            visited_cells = {}
+            sources = self.cells["source"]
+            for source in sources:
+                feasible = self._check_feasibility(requirement.root, 
+                                                   source, visited_cells, 0)
+            
+            if not feasible:
+                infeasible.append(requirement.name)
+
+        # Check if there are any infeasible requirements
+        if len(infeasible) > 0:
+            err_str = ", ".join(infeasible)
+            raise AssertionError("The following requirements are infeasible: " +
+                    err_str)
+                    
+    # FIXME use cell.id to check for visited rather than cell as key
+    def _check_feasibility(self, req, cell, visited, num_ops):
+        # Check if cell visited 
+        if cell in visited:
+            if visted[cell] == num_ops:
+                return False
+        visited[cell] = num_ops
+
+        # Check if reached end
+        if cell.type == "sink":
+            if req.op == "TERMINATE":
+                return True
+            else:
+                return False
+
+        # Check if requirement operation satisfied
+        req_nexts = [req]
+        if not cell.type is "conv" and req.op in cell.ops:
+            req_nexts = req.get_nexts()
+
+        # Iterate over all next requirements
+        reqs_feasible = True
+        for req_next in req_nexts:
+            visited_param = copy(visited)
+            num_ops_param = num_ops
+            if not req_next is req:
+                visited_param[cell] += 1
+                num_ops_param += 1
+
+            # Iterate over all next cells
+            req_feasible = False
+            for cell_next in cell.get_nexts():
+                check_feasible = \
+                    self._check_feasibility(req_next, cell_next, 
+                                            visited_param, num_ops_param)
+                req_feasible = req_feasible or check_feasible
+
+            # Accumulate feasibilities
+            reqs_feasible = reqs_feasible and req_feasible
+
+        return reqs_feasible
+    
+    def query_cells(self, types=None):
+        cells = []
+        if not types:
+            for item in self.cells.items():
+                cells.extend(item)
+        else:
+            for type in types:
+                cells.extend(self.cells[type])
+
+        return cells
+
+    def update(self, cur_time):
         queue = deque()
         visited = set()
 
@@ -77,7 +145,32 @@ class Plant(Graph):
         sinks = self.cells["sink"]
         for sink in sinks:
             queue.append(sink)
-        
+
+        # Perform reverse BFS
+        while len(queue) > 0:
+            n = len(queue)
+            for i in range(n):
+                cell = queue.popleft()
+
+                if cell.id in visited:
+                    continue
+                visited.add(cell.id)
+
+                cell.update(cur_time)
+
+                # Append prev cells to queue
+                for prev in cell.get_prevs():
+                    queue.append(prev)
+
+    def log(self):
+        queue = deque()
+        visited = set()
+
+        # Add all sinks to queue
+        sinks = self.cells["sink"]
+        for sink in sinks:
+            queue.append(sink)
+
         # Perform reverse BFS
         logs = []
         while len(queue) > 0:
@@ -85,25 +178,16 @@ class Plant(Graph):
             for i in range(n):
                 cell = queue.popleft()
 
-                if cell in visited:
+                if cell.id in visited:
                     continue
-                visited.add(cell)
+                visited.add(cell.id)
 
-                cell_control_table = self._control_table[cell.id]
-                cell.update(delta_time, cell_control_table)
-
-                # Log cell data
-                if logging:
-                    log = cell.log()
-                    logs.append(log)
+                log = cell.log()
+                logs.append(log)
 
                 # Append prev cells to queue
                 for prev in cell.get_prevs():
                     queue.append(prev)
 
-        log_str = None
-        if logging:
-            log_str = '\n'.join(logs)
-
-        return log_str
+        return '\n'.join(logs)
 

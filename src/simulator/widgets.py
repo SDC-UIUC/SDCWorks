@@ -1,5 +1,23 @@
 from uuid import uuid4
+    
+# FIXME in the future this should only be an id
+class RealWidget:
+    def __init__(self, id):
+        self.id = id
 
+    def __str__(self):
+        return "Widget: %s" % (self.id)
+
+class VirtualWidget:
+    def __init__(self, req_id):
+        self.id = str(uuid4())
+        self.req_id = req_id
+
+        self.feasible_ptr = None
+        self.completed_ops = []
+        self.processing_time = 0
+
+"""
 class Widget:
     def __init__(self, requirement):
         self.id = str(uuid4())
@@ -24,4 +42,4 @@ class Widget:
 
         if not selected_next:
             raise ValueError("No requirement with %s found" % req_name)
-
+"""

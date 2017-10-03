@@ -1,6 +1,8 @@
-from simulator.simulator import Simulator
+from simulator.controller import Controller
+from simulator.network import Network
 from simulator.plant import Plant
 from simulator.requirements import Requirements
+from simulator.simulator import Simulator
 from algorithms import *
 
 import os, getopt, sys
@@ -58,14 +60,17 @@ def main(dir_idx=None):
             raise ValueError("Unknown (opt, arg): (%s, %s)" % (opt, arg))
     
     # Initialize classes
-    plant = Plant(plant_yaml)
     requirements = Requirements(requirements_yaml)
+    network = Network()
 
-    algorithm = algorithms[algo_key](plant, requirements)
-    simulator = Simulator(plant, requirements, algorithm, directory)
+    controller = Controller(network, requirements)
+    plant = Plant(plant_yaml, network)
+
+    #algorithm = algorithms[algo_key](plant, requirements)
+    simulator = Simulator(plant, controller, requirements, directory)
 
     # Simulate system
-    END_TIME = 1
+    END_TIME = 3
     DELTA_TIME = 1
     simulator.simulate(END_TIME, DELTA_TIME)
 

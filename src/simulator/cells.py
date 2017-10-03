@@ -1,31 +1,36 @@
 from abc import ABC, abstractmethod
 from collections import deque
 from generic.graph import GraphNode
-from simulator.widget import Widget
+from simulator.widgets import RealWidget
 
-import sys
+#import sys
+import pdb
 
+# FIXME make an operation class which creates an operation
 # FIXME make most class variables be private
 
 # Consider making GraphNode a parent class of this one rather than doing what I
 # am doing
 # Move this to generics 
 class GenericCell(ABC, GraphNode):
-    def __init__(self, name, type, label=""):
+    def __init__(self, name, type, label="", ops=None, network=None):
         super().__init__(name, label)    
-        
-        self.type = type
-        self.queue = None
-        self.states = ["idle", "operational", "waiting"]
 
-        self.network = None
+        self.type = type
+        self.network = network
+        self.ops = {}
+        if ops:
+            self.ops = ops
+
+        self._queue = None
+        self.status = "idle"
 
     @abstractmethod
     def log(self):
         pass
 
     @abstractmethod
-    def update(self, delta_time, control_table):
+    def update(self, delta_time):
         pass
 
     """
@@ -35,31 +40,70 @@ class GenericCell(ABC, GraphNode):
     """
 
 class Cell(GenericCell):
-    def __init__(self, name, ops=None):
-        super().__init__(name, "cell")
+    def __init__(self, name, ops=None, network=None):
+        super().__init__(name, "cell", ops=ops, network=network)
 
-        if ops is None:
-            ops = {}
-        self.ops = ops
-
-        # Storage
-        self._real_queue_capacity = 0
-        self._real_queue = []
-        self._virtual_queue = []
+        # FIXME
+        self._queue = deque(maxlen=3)
 
         # Time
-        self._cur_time = 0
         self.op_start_time = 0
-
-        # Widget
-        self.cur_widget = None
     
+    def enqueue(self, widget):
+        if len(self._queue) >= self._queue.maxlen:
+            return False
+
+        self._queue.append(widget)
+        return True
+
     # TODO
-    def update(self, delta_time, control_table):
-        self._cur_time += delta_time
-        
+    def update(self, cur_time):
+        self._cur_time = cur_time
+
+        # Cell idle
+        if self.status is "idle":
+            if len(self._queue) > 1:
+                widget = self._queue[0]
+                self._oper = self.network.process_network_command("controller",
+                    "query_operation", widget.id)
+
+                self.status = "operational"
+                self._op_start_time = cur_time
+
+        # Cell operational
+        if self.status is "operational":
+            if self._oper[0] is "NOP":
+                self.status = "waiting"
+
+            elif cur_time - self._op_start_time >= self._oper[1]:
+                widget =self._queue[0]
+                self.network.process_network_command("controller",
+                        "notify_completion", widget.id, self._oper[0])
+                self.status = "waiting"
+
+        # Cell waiting
+        if self.status is "waiting":
+            widget = self._queue[0]
+            best_next = self.network.process_network_command("controller",
+                "query_next", widget.id)
+
+            if best_next.enqueue(widget):
+                self.network.process_network_command("controller",
+                    "notify_enqueue", widget.id)
+                self._queue.popleft()
+                self.status = "idle"
+            else: 
+                self.status = "waiting"
 
     def log(self):
+        widget_str = "Widget: None"
+        if len(self._queue) > 0:
+            widget_str = (
+                "" + str(self.queue[0]) + "\n"
+                "Status: " + self.status + "\n"
+                "Operation: (" + self._oper[0] + ", " + str(self._oper[1]) + ")\n"
+            )
+
         log_str = (
             "Cell\n----------\n"
             "Name: " + self.name + "\n"
@@ -67,14 +111,11 @@ class Cell(GenericCell):
 
         return log_str
 
-    # FIXME rename to enqueue_widget
-    def move_widget(self):
-        if not self.widget:
-            return
-
 class Conveyor(GenericCell):
-    def __init__(self, name="", length=0):
-        super().__init__(name, "conv", "Conveyor")
+    def __init__(self, name="", length=0, network=None):
+        super().__init__(name, "conv", label="Conveyor", network=network)
+
+        self.ops["NOP"] = 0
 
         self.dot_attrs.update({
             "style": "filled, rounded",
@@ -82,38 +123,61 @@ class Conveyor(GenericCell):
             "fillcolor": "deepskyblue",
         })
 
-        self.queue = deque([None] * length, maxlen=length)
+        self._queue = deque([None] * length, maxlen=length)
 
-    def enqueue_widget(self, widget):
-        if not isinstance(self.queue[-1], Widget):
-            self.queue[-1] = widget
+    def enqueue(self, widget):
+        if not isinstance(self._queue[-1], RealWidget):
+            self._queue[-1] = widget
             return True
         else:
             return False
 
-    def update(self, delta_time, control_table):
-        if isinstance(self.queue[0], Widget):
-            widget = self.queue[0]
-            op, next = widget.get_op_key()
-        else:
-            self.queue.append(None)
-            return
+    def update(self, cur_time):
+        # Conveyor idle
+        if self.status is "idle":
+            if isinstance(self._queue[0], RealWidget):
+                widget = self._queue[0]
+                self._oper = self.network.process_network_command("controller",
+                    "query_operation", widget.id)
 
-        enqueued = next.enqueue(widget)
-        if enqueued:
-            self.queue.popleft()
-            self.state = "operational"
-            self.queue.append(None)
-        else:
-            self.state = "idle"
+                self.status = "operational"
+                self._op_start_time = cur_time
+            else:
+                self._queue.append(None)
 
+        # Conveyor operational
+        if self.status is "operational":
+            if self._oper[0] is "NOP":
+                self.status = "waiting"
+
+            elif cur_time - self._op_start_time >= self._oper[1]:
+                widget =self._queue[0]
+                self.network.process_network_command("controller",
+                        "notify_completion", widget.id, self._oper[0])
+                self.status = "waiting"
+
+        # Conveyor waiting
+        if self.status is "waiting":
+            widget = self._queue[0]
+            best_next = self.network.process_network_command("controller",
+                "query_next", widget.id)
+
+            if best_next.enqueue(widget):
+                self.network.process_network_command("controller",
+                    "notify_enqueue", widget.id)
+                self._queue.popleft()
+                self.status = "idle"
+            else: 
+                self.status = "waiting"
+        
     def log(self):
         queue_str = "Queue: [ "
-        for widget in self.queue:
-            if isinstance(widget, Widget):
+        for widget in self._queue:
+            if isinstance(widget, RealWidget):
                 queue_str += widget.id + " "
             else:
                 queue_str += "None "
+        queue_str += "]"
 
         log_str = (
             "Conveyor\n----------\n"
@@ -123,53 +187,21 @@ class Conveyor(GenericCell):
 
         return log_str
 
-
 class Source(GenericCell):
-    def __init__(self, name, ops=None, spawn_attrs=None):
-        super().__init__(name, "source")
+    def __init__(self, name, ops=None, spawn_attrs=None, network=None):
+        super().__init__(name, "source", ops=ops, network=network)
 
         self.dot_attrs.update({
             "style": "filled",
             "fillcolor": "green",
         })
 
-        if ops is None:
-            ops = {}
-        self.ops = ops
-
-        self._cur_time = 0
-        self._outputs = []
-        self._requirements = None
-        
-        # Widget variables
-        maxlen = 1 # FIXME
-        self.queue = deque(maxlen=maxlen)
-
-        # Spawn variables
-        self._last_spawn_time = -sys.maxsize - 1
-        self._spawn_time_type = spawn_attrs["spawn_time_type"]
-        if self._spawn_time_type == "constant":
-            self._spawn_time = spawn_attrs["spawn_time_interval"]
-
-        self._spawn_req_type = spawn_attrs["spawn_req_type"]
-        if self._spawn_req_type == "round-robin":
-            self._spawn_req_idx = 0
-
-    def set_requirements(self, requirements):
-        self.requirements = requirements
-
-    """
-    def get_nexts(self, cells=False):
-        if not cells:
-            return self.conv_nexts
-        else:
-            return self.nexts
-    """
-
+        self._queue = deque(maxlen=1)
+            
     def log(self):
         widget_str = "Widget: None"
-        if len(self.queue) > 0:
-            widget_str = str(self.queue[0])
+        if len(self._queue) > 0:
+            widget_str = str(self._queue[0])
 
         log_str = (
             "Source\n----------\n"
@@ -179,85 +211,78 @@ class Source(GenericCell):
 
         return log_str
 
-    # FIXME need to check for states
-    def update(self, delta_time, control_table):
-        self._cur_time += delta_time
+    def update(self, cur_time):
+        # Source idle
+        if self.status == "idle":
+            widget_id, self._oper = self.network.process_network_command("controller",
+                    "query_instantiate")
 
-        widget = self._spawn_widget()
-        if not widget:
-            return
-        self.queue.append(widget)
-        
-        # Get control actions
-        widget = self.queue[0]
-        op, next = self._widget.get_op_key()
+            widget = RealWidget(widget_id)
+            self._queue.append(widget)
 
-        # FIXME works for a source with one widget but this has to be fixed for
-        # multiple widgets because the work time won't be self._last_spawn_time
-        op_time = self.ops[op]
-        if self._cur_time - self._last_spawn_time >= op_time:
-            enqueued = next.enqueue_widget(widget)
-            if enqueued:
-                self.queue.popleft()
+            self.status = "operational"
+            self._op_start_time = cur_time
 
-    # FIXME this can be renamed to enqueue_widget()
-    def _spawn_widget(self):
-        # Check if spawn widget
-        if len(self.queue) == self.queue.maxlen:
-            return None
+        # Source operational
+        elif self.status == "operational":
+            if cur_time - self._op_start_time >= self._oper[1]:
+                widget = self._queue[0]
+                self.network.process_network_command("controller",
+                        "notify_completion", widget.id, self._oper[0])
+                self.status = "waiting"
 
-        spawn = False
-        if self._spawn_time_type == "constant":
-            if self._cur_time - self._last_spawn_time >= self._spawn_time:
-                spawn = True
-                self._last_spawn_time = self._cur_time
+        # Source waiting
+        if self.status == "waiting":
+            widget = self._queue[0]
+            best_next = self.network.process_network_command("controller",
+                    "query_next", widget.id)
 
-        # Select requirement to spawn
-        if self._spawn_req_type == "round-robin":
-            requirement = self.requirements[self._spawn_req_idx]
-            self._widget = Widget(requirement)
-            self._spawn_req_idx = (self._spawn_req_idx + 1) % len(self.requirements)
+            if best_next.enqueue(widget):
+                self.network.process_network_command("controller",
+                    "notify_enqueue", widget.id)
+                self._queue.popleft()
+                self.status = "idle"
+            else: 
+                self.status = "waiting"
 
-        return Widget(requirement)
-
-    """
-    def enqueue_widget(self):
-        if not self.widget:
-            return
-    """
-        
 class Sink(GenericCell):
-    def __init__(self, name, ops=None):
-        super().__init__(name, "sink")
+    def __init__(self, name, ops=None, network=None):
+        super().__init__(name, "sink", ops=ops, network=network)
 
         self.dot_attrs.update({
             "style": "filled",
             "fillcolor": "red",
         })
 
-        if ops is None:
-            ops = {}
-        self.ops = ops
+        self.queue = deque(maxlen=1)
 
-        self.cur_time = 0
+    # FIXME
+    def update(self, cur_time):
+        # Sink idle
+        if self.status == "idle":
+            if len(self.queue) > 1:
+                self._oper = self.network.process_network_command("controller",
+                        "query_op", self.queue[0].id)
+                        
+                self.status = "operational"
+                self._op_start_time = cur_time
 
-        # Widget variables
-        self._widget = None
-        self._del_widget = None
-        
-    def update(self, delta_time, control_table):
-        self.cur_time += delta_time
+        # Sink operational
+        elif self.status == "operational":
+            if cur_time - self._op_start_time >= self._oper[1]:
+                self.status = "waiting"
 
-        # Terminate widget
-        self._del_widget = None
-        if not self._widget is None:
-            self._del_widget = self._widget
-            self._widget = None
+        # Sink waiting
+        if self.status == "waiting":
+            self.network.process_network_command("controller", "terminate",
+                    self.queue[0].id)
+            
+            self.queue.popleft()
 
     def log(self):
         widget_str = "Widget: None"
-        if self._del_widget:
-            widget_str = str(self._widget)
+        if len(self.queue) > 0:
+            widget_str = str(self.queue[0])
 
         log_str = (
             "Sink\n----------\n"
