@@ -88,7 +88,7 @@ class Plant(Graph):
     def _check_feasibility(self, req, cell, visited, num_ops):
         # Check if cell visited 
         if cell in visited:
-            if visted[cell] == num_ops:
+            if visited[cell] == num_ops:
                 return False
         visited[cell] = num_ops
 

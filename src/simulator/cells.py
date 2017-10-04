@@ -47,6 +47,7 @@ class Cell(GenericCell):
         self._queue = deque(maxlen=3)
 
         # Time
+        self.ops["NOP"] = 0
         self.op_start_time = 0
     
     def enqueue(self, widget):

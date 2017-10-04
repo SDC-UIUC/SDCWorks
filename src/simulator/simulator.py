@@ -15,15 +15,15 @@ class Simulator:
         # Create directories
         self.dot_dir = os.path.join(directory, "dot")
         if not os.path.exists(self.dot_dir):
-            os.makedirs(dot_dir)
+            os.makedirs(self.dot_dir)
 
         self.png_dir = os.path.join(directory, "png")
         if not os.path.exists(self.png_dir):
-            os.makedirs(png_dir)
+            os.makedirs(self.png_dir)
 
         self.log_dir = os.path.join(directory, "log")
         if not os.path.exists(self.log_dir):
-            os.makedirs(log_dir)
+            os.makedirs(self.log_dir)
 
         # Plant output
         plant_dot_path = os.path.join(self.dot_dir, "plant.dot")
