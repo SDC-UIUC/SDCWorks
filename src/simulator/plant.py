@@ -156,11 +156,32 @@ class Plant(Graph):
                     continue
                 visited.add(cell.id)
 
-                cell.update(cur_time)
-
                 # Append prev cells to queue
                 for prev in cell.get_prevs():
                     queue.append(prev)
+                
+                # Skip if conveyor
+                if cell.type == "conv":
+                    continue
+
+                # Update cell and all input conveyors
+                cell.update(cur_time)
+
+                if len(cell.get_prevs()) == 0:
+                    continue
+
+                for prev in cell.get_prevs():
+                    prev.update(cur_time)
+
+                # Gather and select the one with maximum wait time
+                wait_times = []
+                for prev in cell.get_prevs():
+                    wait_times.append((prev.wait_time, prev))
+                wait_times.sort(key=lambda wt: wt[0])
+                
+                wait_time = wait_times[-1]
+                if wait_time[0] >= 1:
+                    wait_time[1].transfer()
 
     def log(self):
         queue = deque()

@@ -10,7 +10,11 @@ class Controller():
         self._control_table = None
         self.requirement_keys = None
         self._widgets = {}
+
+        # Rename this to completed
         self._completed_widgets = {}
+        for requirement in self.requirements:
+            self._completed_widgets[requirement.id] = {}
 
         # Initialize network with controller functions
         network.add_dispatch_command("controller", "notify_completion",
@@ -32,22 +36,42 @@ class Controller():
         self.requirement_keys = list(self._control_table.keys())
         self.update_control_table()
 
+    def log_statistics(self):
+        for req_id, req_dict in self._completed_widgets.items():
+
+            # FIXME
+            req_str = "Requirement name: %s\n" % (req_id)
+            for path, widgets in req_dict.items():
+                req_str += "\t%s: %d\n" % (str(path), len(widgets))
+
+        return req_str
+
     def notify_completion(self, widget_id, op):
         widget = self._widgets[widget_id]
-        widget.completed_ops.append(op)
+        if not op == "NOP":
+            widget.completed_ops.append(op)
+        widget.path.append(widget.ptr.name)
+
+        if op == "TERMINATE":
+            self._widgets.pop(widget_id)
+            widget.ptr = None
+            req_dict = self._completed_widgets[widget.req_id]
+
+            path = tuple(widget.path)
+            if path not in req_dict:
+                req_dict[path] = [widget]
+            else:
+                req_dict[path].append(widget)
 
     def notify_enqueue(self, widget_id):
         widget = self._widgets[widget_id]
         widget.ptr = widget.ptr.best_next
 
     # TODO check the processing list against requirement 
-    def notify_termination(self, widget_id):
+    def notify_termination(self, widget_id, op):
         widget = self._widgets.pop(widget_id)
         widget.ptr = None
-        self._completed_widgets[widget_id] = widget
-    
-    def query_instantiate_test(self):
-        print("Testing")
+        self._completed_widgets[widget.req_id] = req_dict
 
     # FIXME spawns always
     def query_instantiate(self):
@@ -64,8 +88,8 @@ class Controller():
         return next
 
     def query_operation(self, widget_id):
-        widget = self.widgets[widget_id]
-        return widget.op
+        widget = self._widgets[widget_id]
+        return widget.ptr.op
 
 
     # TODO this is a user defined function to set the weights of each of the

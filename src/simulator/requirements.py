@@ -1,5 +1,6 @@
 from parser.parser import parse_requirements
 from generic.graph import Graph, GraphNode
+from uuid import uuid4
 
 import pdb
 
@@ -17,6 +18,8 @@ class Requirements(list):
 class Requirement(Graph):
     def __init__(self, name="", nodes=None, root=None, edges=None):
         super().__init__(name)
+
+        self.id = str(uuid4())
 
         reqs_dict = {}
 

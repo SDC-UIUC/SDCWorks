@@ -17,6 +17,8 @@ class VirtualWidget:
         self.completed_ops = []
         self.processing_time = 0
 
+        self.path = []
+
 """
 class Widget:
     def __init__(self, requirement):

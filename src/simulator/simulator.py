@@ -75,7 +75,7 @@ class Simulator:
                                                  visited_cells, 0, fg)
             assert(len(root) == 1)
             fg.root = root[0]
-            feasible_graphs[requirement.name] = fg
+            feasible_graphs[requirement.id] = fg
 
         return feasible_graphs
 
@@ -165,6 +165,10 @@ class Simulator:
             log_str = "Time: %f\n##########\n" % (time) + log_str + "##########\n\n"
             with open(log_path, 'a') as log_file:
                 log_file.write(log_str)
+
+        log_str = self.controller.log_statistics()
+        with open(log_path, 'a') as log_file:
+            log_file.write(log_str)
 
         print("Ending simulation")
 

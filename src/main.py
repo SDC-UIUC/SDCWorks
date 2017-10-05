@@ -35,8 +35,8 @@ def main(dir_idx=None):
 
     # Parse arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ha:d:", ["help", "algorithm=",
-            "dir"])
+        #opts, args = getopt.getopt(sys.argv[1:], "ha:d:", ["help", "algorithm=", "dir"])
+        opts, args = getopt.getopt(sys.argv[1:], "hd:", ["help", "dir"])
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -70,7 +70,7 @@ def main(dir_idx=None):
     simulator = Simulator(plant, controller, requirements, directory)
 
     # Simulate system
-    END_TIME = 3
+    END_TIME = 1000
     DELTA_TIME = 1
     simulator.simulate(END_TIME, DELTA_TIME)
 
