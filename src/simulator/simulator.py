@@ -43,7 +43,14 @@ class Simulator:
         # Generate all feasible paths
         feasible_graphs = self._generate_feasibility_graphs()
         for req_id, feasible_graph in feasible_graphs.items():
-            fg_file = "fg-%s" % (req_id)
+            
+            # Find req_name FIXME
+            for requirement in self.requirements:
+                if requirement.id == req_id:
+                    req_name = requirement.name
+                    break
+
+            fg_file = "fg-%s" % (req_name)
             fg_dot_path = os.path.join(self.dot_dir, fg_file + ".dot")
             fg_png_path = os.path.join(self.png_dir, fg_file + ".png")
             feasible_graph.generate_output_files(fg_dot_path, fg_png_path)
@@ -159,6 +166,7 @@ class Simulator:
         while (time < end_time):
             time += delta_time
             self.plant.update(time)
+            self.controller.update_statistics(time)
 
             # Log and write to file
             log_str = self.plant.log() 
@@ -166,9 +174,13 @@ class Simulator:
             with open(log_path, 'a') as log_file:
                 log_file.write(log_str)
 
+        # Log controller statistics
         log_str = self.controller.log_statistics()
         with open(log_path, 'a') as log_file:
             log_file.write(log_str)
+
+        # Plot controller statistics
+        self.controller.plot_statistics()
 
         print("Ending simulation")
 

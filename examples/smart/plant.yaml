@@ -1,0 +1,119 @@
+cells:
+    - source:
+        name: "Source"
+
+    - sink:
+        name: "Sink"
+
+    - cell:
+        name: "v1"
+        operations:
+            - ["pass", 1]
+
+    - cell:
+        name: "v2"
+        operations:
+            - ["pass", 1]
+            - ["grab", 1]
+
+    - cell:
+        name: "v3"
+        operations:
+            - ["pass", 1]
+            - ["grab", 1]
+
+    - cell:
+        name: "v4"
+        operations:
+            - ["a", 20]
+            - ["b", 50]
+            - ["c", 25]
+            - ["d", 35]
+
+    - cell:
+        name: "v5"
+        operations:
+            - ["a", 25]
+            - ["b", 30]
+            - ["c", 25]
+            - ["d", 10]
+    - cell:
+        name: "v6"
+        operations:
+            - ["a", 35]
+            - ["b", 25]
+            - ["c", 15]
+            - ["d", 25]
+    - cell:
+        name: "v7"
+        operations:
+            - ["a", 50]
+            - ["b", 10]
+            - ["c", 30]
+            - ["d", 30]
+
+conveyors:
+    - conveyor:
+        length: 5
+        prev: ["Source"]
+        next: ["v1"]
+
+    - conveyor:
+        length: 5
+        prev: ["v1"]
+        next: ["Sink"]
+
+    - conveyor:
+        length: 5
+        prev: ["v1"]
+        next: ["v2"]
+
+    - conveyor:
+        length: 5
+        prev: ["v2"]
+        next: ["v3"]
+
+    - conveyor:
+        length: 5
+        prev: ["v3"]
+        next: ["v1"]
+
+    - conveyor:
+        length: 5
+        prev: ["v2"]
+        next: ["v4"]
+
+    - conveyor:
+        length: 5
+        prev: ["v4"]
+        next: ["v2"]
+
+    - conveyor:
+        length: 5
+        prev: ["v2"]
+        next: ["v5"]
+
+    - conveyor:
+        length: 5
+        prev: ["v5"]
+        next: ["v2"]
+
+    - conveyor:
+        length: 5
+        prev: ["v3"]
+        next: ["v6"]
+
+    - conveyor:
+        length: 5
+        prev: ["v6"]
+        next: ["v3"]
+
+    - conveyor:
+        length: 5
+        prev: ["v3"]
+        next: ["v7"]
+
+    - conveyor:
+        length: 5
+        prev: ["v7"]
+        next: ["v3"]

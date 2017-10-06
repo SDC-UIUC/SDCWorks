@@ -70,7 +70,7 @@ def main(dir_idx=None):
     simulator = Simulator(plant, controller, requirements, directory)
 
     # Simulate system
-    END_TIME = 1000
+    END_TIME = 10000
     DELTA_TIME = 1
     simulator.simulate(END_TIME, DELTA_TIME)
 

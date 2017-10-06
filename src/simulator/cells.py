@@ -139,10 +139,10 @@ class Conveyor(GenericCell):
         next = self._nexts[0]
         widget = self._queue[0]
 
-        next.enqueue(widget)
-        self.network.process_network_command("controller", 
-            "notify_enqueue", widget.id)
-        self._queue[0] = None
+        if next.enqueue(widget):
+            self.network.process_network_command("controller", 
+                "notify_enqueue", widget.id)
+            self._queue[0] = None
 
     def update(self, cur_time):
         # Conveyor idle
@@ -163,7 +163,7 @@ class Conveyor(GenericCell):
 
         log_str = (
             "Conveyor\n----------\n"
-            "Name: " + self.name + "\n"
+            "Prev: " + self._prevs[0].name + " next: " + self._nexts[0].name + "\n"
             "" + queue_str + "\n"
         )
 

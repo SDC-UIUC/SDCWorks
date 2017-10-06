@@ -1,0 +1,68 @@
+cells:
+    - source:
+        name: "Source"
+
+    - sink:
+        name: "Sink"
+
+    - cell:
+        name: "v1"
+        operations:
+            - ["a", 20]
+
+    - cell:
+        name: "v2"
+        operations:
+            - ["b", 30]
+
+    - cell:
+        name: "v3"
+        operations:
+            - ["c", 40]
+            - ["d", 25]
+
+    - cell:
+        name: "v4"
+        operations:
+            - ["e", 35]
+
+    - cell:
+        name: "v5"
+        operations:
+            - ["f", 50]
+
+conveyors:
+    - conveyor:
+        length: 5
+        prev: ["Source"]
+        next: ["v1"]
+
+    - conveyor:
+        length: 5
+        prev: ["v5"]
+        next: ["Sink"]
+
+    - conveyor:
+        length: 5
+        prev: ["v1"]
+        next: ["v2"]
+
+    - conveyor:
+        length: 5
+        prev: ["v2"]
+        next: ["v3"]
+
+    - conveyor:
+        length: 5
+        prev: ["v2"]
+        next: ["v4"]
+
+    - conveyor:
+        length: 5
+        prev: ["v3"]
+        next: ["v5"]
+
+    - conveyor:
+        length: 5
+        prev: ["v4"]
+        next: ["v5"]

@@ -1,5 +1,4 @@
 requirements:
-    # Valid
     - requirement:
         name: "Req1"
         nodes:
@@ -7,46 +6,42 @@ requirements:
             - ["A", "a"]
             - ["B", "b"]
             - ["C", "c"]
+            - ["D", "f"]
             - ["END", "TERMINATE"]
         root: "INIT"
         edges:
             - ["INIT", ["A"]]
             - ["A", ["B"]]
             - ["B", ["C"]]
-            - ["C", ["END"]]
-              
-     # Valid
+            - ["C", ["D"]]
+            - ["D", ["END"]]
     - requirement:
         name: "Req2"
         nodes:
             - ["INIT", "INSTANTIATE"]
-            - ["A", "a"]
             - ["B", "b"]
-            - ["C", "c"]
-            - ["D", "d"]
+            - ["E", "e"]
             - ["END", "TERMINATE"]
         root: "INIT"
         edges:
-            - ["INIT", ["A"]]
-            - ["A", ["B"]]
-            - ["B", ["C", "D"]]
-            - ["C", ["END"]]
-            - ["D", ["END"]]
-
-    # Invalid
+            - ["INIT", ["B"]]
+            - ["B", ["E"]]
+            - ["E", ["END"]]
     - requirement:
         name: "Req3"
         nodes:
             - ["INIT", "INSTANTIATE"]
             - ["A", "a"]
-            - ["B", "b"]
-            - ["C", "c"]
+            - ["D", "d"]
             - ["E", "e"]
+            - ["F", "f"]
             - ["END", "TERMINATE"]
         root: "INIT"
         edges:
             - ["INIT", ["A"]]
-            - ["A", ["B"]]
-            - ["B", ["C", "E"]]
-            - ["C", ["END"]]
-            - ["E", ["END"]]
+            - ["A", ["D"]]
+            - ["A", ["E"]]
+            - ["D", ["F"]]
+            - ["E", ["F"]]
+            - ["F", ["END"]]
+

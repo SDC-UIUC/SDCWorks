@@ -1,0 +1,13 @@
+requirements:
+    - requirement:
+        name: "Req1"
+        nodes:
+            - ["INIT", "INSTANTIATE"]
+            - ["v4", "a"]
+            - ["v5", "b"]
+            - ["END", "TERMINATE"]
+        root: "INIT"
+        edges:
+            - ["INIT", ["v4"]]
+            - ["v4", ["v5"]]
+            - ["v5", ["END"]]
