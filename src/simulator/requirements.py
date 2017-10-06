@@ -19,7 +19,8 @@ class Requirement(Graph):
     def __init__(self, name="", nodes=None, root=None, edges=None):
         super().__init__(name)
 
-        self.id = str(uuid4())
+        #self.id = str(uuid4())
+        self.id = name
 
         reqs_dict = {}
 

@@ -25,6 +25,14 @@ class Simulator:
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
 
+        self.data_dir = os.path.join(directory, "data")
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
+
+        self.plot_dir = os.path.join(directory, "plot")
+        if not os.path.exists(self.plot_dir):
+            os.makedirs(self.plot_dir)
+
         # Plant output
         plant_dot_path = os.path.join(self.dot_dir, "plant.dot")
         plant_png_path = os.path.join(self.png_dir, "plant.png")
@@ -166,7 +174,9 @@ class Simulator:
         while (time < end_time):
             time += delta_time
             self.plant.update(time)
+
             self.controller.update_statistics(time)
+            self.controller.update_control_table()
 
             # Log and write to file
             log_str = self.plant.log() 
@@ -179,8 +189,9 @@ class Simulator:
         with open(log_path, 'a') as log_file:
             log_file.write(log_str)
 
-        # Plot controller statistics
-        self.controller.plot_statistics()
+        # Save controller statistics
+        #self.controller.plot_statistics()
+        self.controller.save_statistics(self.data_dir)
 
         print("Ending simulation")
 

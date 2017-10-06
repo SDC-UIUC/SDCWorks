@@ -3,7 +3,6 @@ from simulator.network import Network
 from simulator.plant import Plant
 from simulator.requirements import Requirements
 from simulator.simulator import Simulator
-from algorithms import *
 
 import os, getopt, sys
 
@@ -15,27 +14,17 @@ import pdb
 def usage():
     ustr = ("Usage: python3 main.py -a <algorithm> -d <directory>\n",
             "\n",
-            "\t-a, --algorthm\t\talgorithm to control simulator with\n",
             "\t-d, --directory\t\tdirectory where files are located\n",
             )
     print(ustr)
 
 def main(dir_idx=None):
-    algorithms = {
-            "first": first.First,
-            "random": random.Random,
-            "spf": spf.SPF,
-    }
-    algo_key = None
-    algorithm = None
-
     directory = None
     plant_yaml = None
     requirements_yaml = None
 
     # Parse arguments
     try:
-        #opts, args = getopt.getopt(sys.argv[1:], "ha:d:", ["help", "algorithm=", "dir"])
         opts, args = getopt.getopt(sys.argv[1:], "hd:", ["help", "dir"])
     except getopt.GetoptError as err:
         print(err)
@@ -46,8 +35,6 @@ def main(dir_idx=None):
         if opt in ("-h", "--help"):
             usage()
             sys.exit()
-        elif opt in ("-a", "--algorithm") and arg in algorithms:
-            algo_key = arg
         elif opt in ("-d", "--directory") and os.path.exists(arg):
             directory = arg
             plant_yaml = os.path.join(directory, "plant.yaml")

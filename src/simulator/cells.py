@@ -71,7 +71,7 @@ class Cell(GenericCell):
             if cur_time - self._op_start_time >= self._oper[1]:
                 widget =self._queue[0]
                 self.network.process_network_command("controller",
-                        "notify_completion", widget.id, self._oper[0])
+                        "notify_completion", widget.id, self._oper[0], cur_time)
                 self.status = "waiting"
 
         # Cell waiting
@@ -196,13 +196,14 @@ class Source(GenericCell):
     def update(self, cur_time):
         # Source idle
         if self.status == "idle":
+            # FIXME
             widget_id, self._oper = self.network.process_network_command("controller",
-                    "query_instantiate")
+                    "query_instantiate", cur_time)
 
             widget = RealWidget(widget_id)
             self._queue.append(widget)
             self.network.process_network_command("controller",
-                "notify_completion", widget.id, self._oper[0])
+                "notify_completion", widget.id, self._oper[0], cur_time)
 
             self.status = "waiting"
         
@@ -246,7 +247,8 @@ class Sink(GenericCell):
                 "query_operation", widget.id)
 
             self.network.process_network_command("controller",
-                    "notify_completion", self._queue[0].id, self._oper[0])
+                    "notify_completion", self._queue[0].id, self._oper[0],
+                    cur_time)
             self._queue.popleft()
 
     def log(self):

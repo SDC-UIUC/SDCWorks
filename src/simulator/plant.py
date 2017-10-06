@@ -177,9 +177,12 @@ class Plant(Graph):
                 wait_times = []
                 for prev in cell.get_prevs():
                     wait_times.append((prev.wait_time, prev))
-                wait_times.sort(key=lambda wt: wt[0])
+                #wait_times.sort(key=lambda wt: wt[0])
+                #wait_time = wait_times[-1]
+
+                f = lambda wt: wt[0]
+                wait_time = max(wait_times, key=f)
                 
-                wait_time = wait_times[-1]
                 if wait_time[0] >= 1:
                     wait_time[1].transfer()
 
