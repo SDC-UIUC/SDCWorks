@@ -86,5 +86,6 @@ def plot_data(dir):
 
 
 if "__main__" == __name__:
+    plot_data(ONE_CELL)
     plot_data(BRANCH)
     plot_data(BRANCH_MULT)

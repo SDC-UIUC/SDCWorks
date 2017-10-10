@@ -1,0 +1,42 @@
+	Plant Transitions:
+		$\timer = \timer + 1$
+		for each $v \in V$
+			if $\action(v) = \move$ then
+				if $\status(v) = \idle$ then
+					$\status(v) := \operational$
+				if $\status(v) = \operational$ then
+					if $\exists w \in \head(\queue(v))$ then
+						$\status(v) := \waiting$
+					else
+						for each $w \in \{w' \ |\ loc(w') = v, w' \in W\}$
+							$\pos(w) := \pos(w) - 1$
+             
+			if $\action(v) = \mi{stop}$ then
+				$\status(v) := \idle$
+                
+			if $\action(v) = \noop$ then
+				pass
+
+			if $\action(v) = \op \in \OP$ then
+				if $\status(v) = \idle$ then
+					$\starttime(v) := \timer$
+					$\status(v) := \operational$   
+				if $\status(v) = \operational \wedge \timer - \starttime(v) >= \Tmap(v, \op)$ then
+					$\status(v) := \waiting$
+                            
+			if $\action(v) = \optop$ then
+    			$w' :=$ choose $\{w \in W \ |\ \loc(w) \in \verttop\}$
+				$\req(w') :=$ choose $R \in \mathcal{R}$
+				$\loc(w') := v$
+				$\pos(w') := \len(\queue(v))$
+				$\status(v) := \waiting$
+
+			if $\action(v) = \opbot$ then
+				$w' := \pop(\queue(v))$
+				$\loc(w') := \vertbot$
+
+			if $\action(v) = \transfer$ then
+				$w' := pop(queue(v))$
+				$\loc(w') := \nexttr(v)$
+				$\pos(w') := len(queue(\nexttr(v)))$
+				$\status(v) := idle$ 

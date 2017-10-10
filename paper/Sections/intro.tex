@@ -1,0 +1,77 @@
+\section{Introduction}
+\label{sec:intro}
+
+The manufacturing industry represents 12\% of the US GDP
+\cite{mfg-innov-report}. One of the key performance indicators for a
+manufacturing system is the Overall Equipment Effectiveness (OEE),  capturing
+the availability, performance and quality of the production system.  Worldwide
+studies indicate that the average OEE in manufacturing plants is 60\%, whereas
+world-class OEE is considered to be greater than 85\% \cite{Ahmad2002171}.  One
+of the important contributors to this low OEE is unscheduled downtime, caused
+by random faults, machine degradation, and increasingly, cyberattacks
+\cite{ics-cert,mfg-cyber-14,zetter15,hon2005performance,jonsson1999evaluation,ahmad2002establishing}.
+
+One way to reduce this downtime and improve the overall effectiveness and
+management of such manufacturing systems is to develop a {\em global view} of
+the system. Such a view will enable \ca early detection of disruptions, \cb
+timely isolation of affected component(s) and even \cc potential
+reprogramming of parts of (or even the whole) system. Importantly, this
+centralized ability to reprogram the system based on a global view also enables
+the system operator to quickly react to changing demand, allowing for new parts
+to be introduced in an existing manufacturing system, for improved
+profitability. We call our approach {\em software-defined control}
+(SDC)\footnote{Inspired by the concepts from software-defined networking
+(SDN)~\cite{mckeown2008openflow}.}. The key idea of SDC is to {\em separate the logical (control) plane of
+decision making from the management of the physical components and sensory
+information} for large-scale discrete manufacturing systems. All the
+decision-making logic is combined in a single, centralized {\em control plane},
+called the ``cyber-physical control plane'' or {\em controller\/} for short in this paper.
+The controller has a global view of
+the system and it orchestrates  the routing of both physical parts and scheduling of operations in machines by providing detailed instructions to cells in the factory floor. 
+Thus, SDC has several similarities with SDNs. In contrast with 
+SDNs though, the physical components (akin to packets being routed) have 
+different properties -- \ci the queue sizes (buffers) are limited, 
+\cii we cannot just ``drop'' widgets like we do with SDN packets and
+\ciii the time scales are much different -- since manufacturing systems
+operate in the millisecond to second ranges. Thus, we cannot  
+directly model/translate SDN concepts to SDC.
+
+Towards this vision, we present \mfname---a formal modeling framework that captures different state components of manufacturing systems, demarcated into {\em plants} and {\em
+controllers}. Plants describe the floor plan of the factory -- essentially the
+various physical components that operate on the parts being manufactured (that
+we call ``widgets'' without loss of generalization). Controllers are cyber
+components that orchestrate the operations of the plant(s) and the movement of
+widgets\footnote{Section \ref{sec:model} provides more details about
+each of these.}. While there exists significant work in the area of modeling
+manufacturing systems (\eg \cite{desrochers1995applications,askin1993modeling,cassandras1993discrete,zhou1999modeling,jain2001virtual,ezpeleta1995petri}),
+none of them capture the cyber and physical aspects of the system. Modern
+manufacturing systems have significant complexity due to the interplay between
+the software and hardware components.  \mfname captures these aspects at a level of abstraction that makes it both expressive and useful for simulation and analysis.
+
+\mfname has the power to express a wide variety of {\em discrete}
+manufacturing systems. Once 
+developed, a \mfname models can be used to reap many benefits of rigorous models, \eg~
+\ca computer-aided  analysis and verification,
+\cb security analysis (detection of threats, attacks, {\em etc.} and also developing countermeasures),
+\cc ensuring that real-time timing requirements are met, 
+\cd synthesis of controller code for some (or all parts) of the plant and
+\ce monitoring widgets through given plant layouts.
+This is akin to the results in the SDN field where the controller (with
+its global view of the system) can enable verification (\eg \cite{sdn:rei2012,khurshid2012veriflow}), consistency checks\cite{liu2015,liu2015-2},
+dependency checking~\cite{mahajan2013consistent}, synthesizing network
+updates~\cite{NoyesWCF13}, system updates~\cite{katta2013incremental,ghorbani2012walk}
+and security~\cite{sdn:scott-hayward2016} to name just a few. We believe that rigorously developed control architectures and strategies can significantly reduce unscheduled downtime.
+
+We use both a realistic testbed and a synthetic model for evaluation and analysis (Section~\ref{sec:case_study}).
+We are able to record the throughput, end-to-end time and load for varying product manufacturing requirements and plant topologies.
+
+Hence, the high-level contributions of this paper are:
+\begin{enumerate}
+\item \mfname, a \emph{formal modeling framework} that can capture the cyber and physical
+properties of discrete manufacturing systems. [Sections \ref{sec:model}]
+\item An illustration of the expressive power of the framework. [Section \ref{subsec:smart_setup}]
+\item Implementation of a baseline controller to illustrate the capabilities of \mfname. [Section \ref{sec:baseline-controller}]
+\item An open source simulator for \mfname models. [Section \ref{sec:simulation}]
+\end{enumerate}
+
+We first start with some background material and a description of the system model.

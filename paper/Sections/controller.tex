@@ -1,0 +1,95 @@
+\section{Baseline Controller}
+\label{sec:baseline-controller}
+
+In this section, we present a basic centralized controller strategy which is a refinement of the abstract controller of \figref{abstract-cell-variables}. Controllers make the following decisions:  (a) plan a sequence of operations according to the requirements of a widget, (b) map these operations on to appropriate cells, and (c) orchestrate the movement and operation of the widgets and cells. In presenting the controller, we first introduce the formal notion of a {\em plan} that encapsulates the first two pieces. 
+
+\subsection{Plans and Feasible Graphs}
+Recall, given a requirement $R$ and a plant $P$,  $G_P =\langle V_P, E_P \rangle$ is the graph of cells for the plant and
+ $G_R = \langle V_R, E_R \rangle$ is the graph of the requirement. A {\em plan} $\plan$ is essentially a forward simulation relation from $V_R$ to $V_P$~\cite{lyn:fbs}. That is, it is a relation $\plan \subseteq V_R \times V_P$ such that for any $(v_{1R},v_{1P}) \in \plan$ and  $(v_{1R},v_{2R}) \in E_R$, there is {\em a path\/}  $\pi = v_{1P}, \ldots, v_{2P}$ in the plant graph, such that 
+(a) $(v_{2R},v_{2P}) \in \plan$, and  
+(b) $L_R(v_{2R}) \in L_P(v_{2P})$.
+ %
+ In other words, a plan relates vertices in $V_R$ to vertices in $V_P$ so that each edge $(v_{1R},v_{2R})$ in the requirement graph can be simulated by paths $G_P$ and the first and the last vertices in the path are at cells that can perform the operations required at  $(v_{1R},v_{2R})$.
+ %
+ 
+ The above definition of plan allows each operation in the requirement $R$ to be accomplished by traversing an arbitrary but finite path (i.e., sequence of cells) in $G_P$. A path corresponding to a single edge in $E_R$ may revisit the same cell in $G_P$ multiple times. 
+%This is in stark contrast with routing works in SDNs. 
+ %
+We can show this using a standard simulation argument~\cite{lyn:fbs}. Therefore, a plan gives a set of feasible paths for achieving the requirement $R$ in the plant $P$. 
+ \begin{proposition}
+ 	\label{prop:paths}
+ 	There exists a plan for a requirement $R$ and plant $P$ if and only if for every path of $G_R$ there exists a corresponding path in $G_P$.	
+ \end{proposition}
+ 
+ 
+ In order to obtain performance guarantees, concrete controllers will restrict the family of paths. For example, for every edge in $(v_{1R},v_{2R}) \in E_R$, the corresponding path $\pi = v_{1P}, \ldots, v_{kP}$ in $G_R$ may be required to satisfy one of these conditions:
+%
+ \begin{itemize}
+ 	\item 	{\em $k$-cell repetitions\/}:  each cell $v \in G_P$ may repeat in $\pi$ at most $k$ times. For $k=1$ this implies that a cell may be visited at most once including at $v_{2P}$. 
+ 	% 
+ 	\item {\em $k$-op misses\/}: the number of cells $v$ such that $L_R(v_{2R}) \in \Lmap_P(v)$ in the path is at most $k$. For $k=1$ this implies that there is only one cell $v_{2P}$ in $\pi$ with $\Lmap_R(v_{2R}) \in \Lmap_G(v_{2P})$ is where the operation $\Lmap_R(v_{2R})$ is performed. 
+ 	\end{itemize}
+% 
+Given a $\plan$ and path $\pi$ in $G_R$, the corresponding set of paths in $G_P$ constructed from $\plan$ are called the {\em feasible paths} of $\pi$.  The set of all the feasible paths corresponding to $R$ in $G_P$ is called the {\em feasible graph\/} and is denoted by $F_{R,P}$. 
+We now proceed to describe our baseline controller that constructs and uses a particular class of plans
+represented as feasible graphs. 
+ 
+ 
+\subsection{Implementation of Baseline Controller}
+
+\subsubsection*{Controller Variables}
+\figref{controller-variables} gives the names and types of our controller variables ($X_p$).
+Any variables that overlap with the abstract controller variables take on the same definition as  before unless explicitly stated otherwise.
+% Action variable
+%The variable $\action$ encodes the actuation decision made by the controller for each cell for the following plant transition in which the cell uses the decision to perform some operation.
+% Completed variable
+The controller variable $\completed$ keeps track of the sequence of operations that have been performed on each widget. Initially, it is the empty sequence for every widget. 
+
+The $\ptr$ variable of a widget is a pointer into Plan  corresponding to the same requirement as that of the widget. This variable keeps track of what operation should currently be performed on a widget at a particular cell and which path through the plant to take.
+% Starttime variable
+The variable $\starttime$ marks the start of a new operation by a cell and is used track how long a particular operation has been ongoing. 
+%
+The $\waittime$ variable monitors the amount of time a cell has been waiting for the $\transfer$ action to move a widget from the head of its queue.
+
+% Pointer variable
+% Status variable
+A cell's $\status$ denotes the current condition of the plant and can be one of the three following states: $\idle$, the cell is not working on any widget; $\operational$, the cell is performing some $\op \in \OP$ on a widget at the head of the cell's queue; and $\waiting$, the cell has completed $\op \in \OP$ and the cell is waiting for a $\transfer$ action to move the widget at the head of its queue further along in the plant.
+% Timer variable
+%The $\timer$ tracks the total time that has passed since the start of the simulation. It is incremented at the start of every controller transition update.
+% Waittime variable
+% Cost variable
+The $\cost$ variable maps a cell's state to a real number which can be used to choose between feasible paths in order to optimize with respect to a cost metric (for example, energy, reliability, etc.). 
+
+%This weight is used in computing an optimal path that a widget will follow through the plant. The optimality of the path is dependent on the types of metrics one is trying to optimize for.
+
+\begin{figure}[!ht]
+	\centering
+	\mybox{\linewidth}{\linewidth}{
+		\lstinputlisting[language=ioaNums,numbersep=-3pt]{Specifications/cell_vars.txt}
+		\hfill
+		\caption{\scriptsize Controller ($X_c$) variables and types.}
+	\figlabel{controller-variables}		
+	}
+\end{figure}
+
+\subsubsection*{Controller Transitions}
+During each controller transition, the controller first increments $\timer$ by 1 and performs the following three major steps: 
+\begin{enumerate*}[label=(\roman*)]
+    \item determines the shortest path in each feasible graph $F_{R,G}$ according to the chosen cost metric; 
+    \item updates each of the $\nexttr$ and $\action$ variables for each cell; and
+     \item possibly updates the $\cost$ of each cell in the plant.
+\end{enumerate*}
+We discuss these steps in some more detail.
+From the statically computed feasible graphs $F_{R,P}$, the controller runs a shortest path algorithm utilizing the recently set costs to determine the best paths through the plant.
+The controller iterates through each $v \in V$ and first sets the $\nexttr$ variable to the the cell with the lowest cost from the set $\next(v)$. Next, the controller determines the action that the cell should take depending on its type. If the $\celltype(v)$ is a conveyor cell, a $\move$ action is done unless there is a widget at the head of the queue; otherwise, the cell increments its $\waittime$ by 1. If the type is a source cell, the controller checks whether a widget already exists in the cell's queue. If so, then the controller tries to transfer the widget to the next cell, otherwise, it instantiates a new widget. If type is an ordinary cell, the controller cycles between the $\idle$, $\operational$, and $\waiting$ states to determine the correct action. If the cell's status is $\idle$, the controller either tries to transfer the widget immediately in the case of a $\noop$ operation or performs an $\op$ action if there is a widget at the head of the queue; otherwise, the cell does nothing. If the cell's status is $\operational$, the controller assigns the action $\op$ to the cell until the $\op$ has been completed at which point the controller sets the cell's status to waiting. If the cell's status is $\waiting$, the controller tries to transfer the widget. If the transfer is successful, the controller changes the cells's status to $\idle$ and the cycle repeats. Additionally, regardless of state, if the cell has space on its queue, it will try to enqueue a widget from one of its input conveyors with the largest $\waittime$ one of its input conveyors, specifically the input conveyor with the largest waiting time. If the type is a sink cell, the controller instructs the cell to either terminate a widget at $\head(\queue(v)))$ or do nothing.
+%\end{enumerate}
+
+\begin{figure}[!ht]
+	\centering
+	\mybox{\linewidth}{\linewidth}{
+		\lstinputlisting[language=ioaNums,numbersep=-3pt]{Specifications/cell_trans.txt}
+		\hfill
+		\caption{\scriptsize Controller ($X_c$) transitions.}
+        \figlabel{controller-transitions}
+	}
+\end{figure}

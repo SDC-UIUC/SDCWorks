@@ -1,7 +1,7 @@
 from collections import deque
 from datetime import datetime
 from parser.parser import parse_plant
-from generic.graph import Graph
+from generic.graph import GenericGraph
 from simulator.cells import *
 
 from copy import copy
@@ -11,8 +11,8 @@ import os
 
 import pdb
 
-class Plant(Graph):
-    def __init__(self, plant_yaml, network):
+class Plant(GenericGraph):
+    def __init__(self, plant_yaml, network, requirements):
         """Builds a conveyance graph from the description provided in the input
         file
 
@@ -61,14 +61,17 @@ class Plant(Graph):
                 next = self.cells_dict[next]
                 self.add_graph_edges(conv, next)
 
+        # Check if plant satisfies requirements
+        self._check_feasibilities(requirements)
+
         # Initialize network with plant function
         network.add_dispatch_command("plant", "query_cells",
             self.query_cells)
                 
-    def check_feasibilities(self, requirements):
+    def _check_feasibilities(self, requirements):
         # Check each requirement for feasibility
         infeasible = []
-        for requirement in requirements:
+        for _, requirement in requirements.items():
             visited_cells = {}
             sources = self.cells["source"]
             for source in sources:
@@ -132,6 +135,9 @@ class Plant(Graph):
             for item in self.cells.items():
                 cells.extend(item)
         else:
+            if isinstance(types, str):
+                types = [ types ]
+
             for type in types:
                 cells.extend(self.cells[type])
 

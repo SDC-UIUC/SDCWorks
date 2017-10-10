@@ -1,21 +1,20 @@
 % marking changes
 
 %\newcommand{\mitras}[1]{\textcolor{blue}{#1}}
-%\newcommand{\mitras}[1]{{#1}}
-\newcommand{\mitras}[1]{{}}
+\newcommand{\mitras}[1]{{#1}}
 % for nomencl to produce page links
 %\renewcommand*{\pagedeclaration}[1]{\unskip, \hyperpage{#1}}
-%\newcommand{\taylor}[1]{\textcolor{red}{taylor:[[#1]]}}
-\newcommand{\taylor}[1]{}
 %\renewcommand{\nomname}{List of Symbols and Functions}
 
 \newcommand{\authcomment}[1]{\textbf{[[#1]]}}
-\newcommand{\sayan}[1]{\textcolor{blue}{[[#1]]}}
-\newcommand{\lee}[1]{\textcolor{red}{[[#1]]}}
-\newcommand{\sridhar}[1]{\textcolor{red}{[[#1]]}}
-\newcommand{\tool}{{\sf LySHA}\xspace}
-\newcommand{\starl}{{\sf StarL}\xspace}
-\newcommand{\sembrack}[1]{[\![#1]\!]}
+%\newcommand{\sayan}[1]{\textcolor{blue}{\textbf{[SM: [#1]]}}}
+%\newcommand{\taylor}[1]{\textcolor{red}{\textbf{[TJ: [#1]]}}}
+
+\newcommand{\revision}[1]{\textcolor{blue}{#1}}
+
+% blank all comments
+\newcommand{\sayan}[1]{\textcolor{blue}{#1}}
+
 %FIXED SETS
 
 %\newcommand{\Time}{{\sf T}}                     %time domain
@@ -44,6 +43,7 @@
   \fi}
 
 \newcommand{\reals}{{\num R}}                    %reals
+\newcommand{\booleans}{{\num B}}                    %reals
 \newcommand{\nnreals}{{\nnnum R}}                    %nonnegative reals
 \newcommand{\realsinfty}{{\num R} \cup \{\infty, -\infty\}}                    %nonnegative reals
 \newcommand{\plreals}{{\plnum R}}                    %positive reals
@@ -52,8 +52,6 @@
 \newcommand{\rationals}{{\num Q}}                      %rationals
 \newcommand{\nnrationals}{{\nnnum Q}}                   % nonnegative rationals
 \newcommand{\Time}{{\num T}}  
-\newcommand{\bools}{{\num B}}  
-\newcommand{\plintegers}{{\plnum Z}}                      %integers
 
 % EXECUTIONS TRACES and FRAGS
 \newcommand{\extb}[1]{\relax\ifmmode {\sf ExtBeh}_{#1} \else ${\sf ExtBeh}_{#1}$\fi} 
@@ -68,24 +66,12 @@
 \newcommand{\trace}[1]{\relax\ifmmode {\sf Traces}_{#1} \else ${\sf Traces}_{#1}$\fi} 
 \newcommand{\tracef}[1]{\relax\ifmmode {\sf Traces}^*_{#1} \else ${\sf Traces}^*_{#1}$\fi} 
 \newcommand{\tracei}[1]{\relax\ifmmode {\sf Traces}^\omega_{#1} \else ${\sf Traces}^\omega_{#1}$\fi} 
-\newcommand{\traceof}[1]{\relax\ifmmode {\sf trace}_{#1} \else ${\sf trace}_{#1}$\fi} 
-\newcommand{\traceinv}[1]{\relax\ifmmode {\sf TraceInv}_{#1} \else ${\sf TraceInv}_{#1}$\fi} 
-
 
 \newcommand{\frag}[1]{\relax\ifmmode {\sf Frags}_{#1} \else ${\sf Frags}_{#1}$\fi} 
 \newcommand{\fragf}[1]{\relax\ifmmode {\sf Frags}^*_{#1} \else ${\sf Frags}^*_{#1}$\fi} 
 \newcommand{\fragi}[1]{\relax\ifmmode {\sf Frags}^\omega_{#1} \else ${\sf Frags}^\omega_{#1}$\fi} 
 
 \newcommand{\reach}[1]{\relax\ifmmode {\sf Reach}_{#1} \else ${\sf Reach}_{#1}$\fi} 
-\newcommand{\pair}[2]{\relax\ifmmode \langle #1, #2 \rangle \else $\langle #1, #2 \rangle$\fi} 
-
-\newcommand{\TE}{\relax\ifmmode \mathit{Time} \else $\mathit{Time}$ \fi} 
-\newcommand{\EQ}{\relax\ifmmode \mathit{Enq} \else $\mathit{Enq}$ \fi} 
-\newcommand{\DQ}{\relax\ifmmode \mathit{Deq} \else $\mathit{DeqTime}$ \fi} 
-\newcommand{\E}{\relax\ifmmode \mathsf{E} \else $\mathsf{E}$ \fi}
-
-\newcommand{\loc}{\relax\ifmmode \mathit{loc} \else $\mathit{loc}$ \fi}
-\newcommand{\abs}{\relax\ifmmode \mathit{abs} \else $\mathit{abs}$ \fi}
 
 \newcommand{\execs}{{\exec{}}}
 \newcommand{\traces}{{\trace{}}}
@@ -99,66 +85,47 @@
 \newcommand{\itraces}{{\tracei{}}}
 \newcommand{\ifragss}{{\fragi{}}}
 
-\newcommand{\fstate}{{\sf fstate}}  
-\newcommand{\lstate}{{\sf lstate}}  
-\newcommand{\ltime}{{\sf ltime}}  
-\newcommand{\clk}{{\mathit clk}}  
-\newcommand{\msgs}{{\mathit msghist}}  
 
-\newcommand{\length}[1]{\relax\ifmmode  \mathit{length}(#1) \else $\mathit{length}(#1)$\fi} 
-\newcommand{\hbclose}[1]{\relax\ifmmode \mathit{before}(#1) \else $\mathit{before}(#1)$\fi} 
-\newcommand{\haclose}[1]{\relax\ifmmode \mathit{after}(#1) \else $\mathit{after}(#1)$\fi} 
-\newcommand{\trover}[1]{\relax\ifmmode \mathit{reach}_{#1} \else $\mathit{reach}_{#1}$\fi} 
-\newcommand{\obsint}[1]{\relax\ifmmode \mathit{obs}_#1 \else $\mathit{obs}_#1$\fi} 
-\newcommand{\Post}[3]{\relax\ifmmode \mathit{Post}_{#1}(#2,#3) \else $\mathit{Post}_{#1}(#2,#3)$\fi} 
-\newcommand{\Pre}[3]{\relax\ifmmode \mathit{Pre}_{#1}(#2,#3) \else $\mathit{Pre}_{#1}(#2,#3)$\fi} 
-
-
-%\newenvironment{noqedproof}{\pf}{}
+\newenvironment{noqedproof}{\pf}{}
 %\newcommand{\pf}{\par\noindent{\bf Proof:}~}
 
 
- \newtheorem{theorem}{Theorem}
- \newtheorem{lemma}[theorem]{Lemma}
- \newtheorem{corollary}[theorem]{Corollary}
- %\newtheorem*{claim}{Claim}
- \newtheorem{assumption}{Assumption}
- %\theoremstyle{definition}
- \newtheorem{definition}{Definition}
- %\newcommand{\qed}{\hfill{\rule{2mm}{2mm}}\medskip}
- %\newenvironment{proof}{\pf}{\qed}
- \newtheorem{proposition}[theorem]{Proposition}
- \newtheorem{inv}[theorem]{Invariant}
-  
-  \newcounter{rem}
-\setcounter{rem}{0}
+% \newcounter{theorem}
+%%\renewcommand{\thesubsection}{\arabic{subsection}}
+\newtheorem{rtheorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+%\theoremstyle{definition}
+% \newtheorem{definition}{Definition}[section]
+% \renewcommand{\qed}{\hfill{\rule{2mm}{2mm}}\medskip}
+%% \newenvironment{proof}{\pf}{\qed}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{inv}[theorem]{Invariant}
+\newcounter{assump}
+\newtheorem{assumption}[assump]{Assumption}
+% \newtheorem{remark}[theorem]{Remark}
+%%\theoremstyle{assumption}
+% \newtheorem{assumption}{Assumption}[section]
 
- \newenvironment{remark}
- {\refstepcounter{rem} \vspace{2ex}\par\noindent
- {\em Remark~\therem.~}}
  
-% \newcounter{example}
-%  \newtheorem{example}[example]{Example}
-\newcounter{example}
-\setcounter{example}{0}
-  
- \newenvironment{example}
- {\refstepcounter{example} \vspace{2ex}\par\noindent
- \textbf{Example}~\textbf{\theexample~}}{\qed}
+ %\newenvironment{example}
+ %{\refstepcounter{theorem} \vspace{2ex}\par\noindent
+ %\textbf{Example}~\textbf{\thetheorem~}}{\qed}
  
 %\theoremstyle{remark}
-%\newcounter{example}
+% \newcounter{example}
 % \newtheorem{example}{Example}[chapter]
 % {\refstepcounter{theorem} \vspace{2ex}\par\noindent
 % \textbf{Example}~\textbf{\theexampletheorem~}}{\qed}
  
  
  \def\examplenonum#1#2{
-        \vspace{.15in}
-        \noindent
-        {\bf Example #1}{\em ~(continued)}{\bf .}
-        {#2}{\qed}
-        }
+	\vspace{.15in}
+	\noindent
+	{\bf Example #1}{\em ~(continued)}{\bf .}
+	{#2}{\qed}
+	}
 % 
 % \renewcommand{\theequation}{\thesection.\arabic{equation}}
 % \renewcommand{\thefigure}{\thesection.\arabic{figure}}
@@ -191,7 +158,7 @@
 \newcommand{\restr}{\mathrel{\lceil}}
 \newcommand{\proj}{\matrel{\lceil}}
 \newcommand{\restrrange}{\mathrel{\downarrow}}
-\newcommand{\point}[1]{\wp(#1)}                 %point trajectory
+\newcommand{\point}[1]{\wp(#1)}     		%point trajectory
 
 
 
@@ -206,7 +173,6 @@
 \def\H{{\cal H}} % HA
 \def\I{{\cal I}} % environment sequence
 \def\K{{\cal K}} % environment sequence
-\def\L{{\cal L}} % environment sequence
 \def\M{{\cal M}} % Mode switching transitions
 \def\O{{\cal O}} % outcome function
 \def\P{{\cal P}} % set of modes
@@ -218,7 +184,7 @@
 \def\U{{\cal U}} % set of trajectories
 \def\X{{\cal X}} % Lyapunov function
 \def\Y{{\cal Y}} % set of trajectories
-\def\Z{{\cal Z}} % set of trajectories
+
 
 % more special characters
 
@@ -228,13 +194,13 @@
 
 
 % Names of actions, automata etc
-\definecolor{HIOAcolor}{rgb}{0.776,0.22,0.07}
-\newcommand{\HIOA}{\textcolor{HIOAcolor}{\tt HIOA\hspace{3pt}}}
-\newcommand{\PVS}{\textcolor{HIOAcolor}{\tt PVS\hspace{3pt}}}
-\newcommand{\PVSnogap}{\textcolor{HIOAcolor}{\tt PVS\hspace{1pt}}}
-\newcommand{\HIOAbiggap}{\textcolor{HIOAcolor}{\tt HIOA\hspace{6pt}}}
-\newcommand{\HIOAnogap}{\textcolor{HIOAcolor}{\tt HIOA}}
-\newcommand{\anyrelation}{\lessgtr}
+%\definecolor{HIOAcolor}{rgb}{0.776,0.22,0.07}
+%\newcommand{\HIOA}{\textcolor{HIOAcolor}{\tt HIOA\hspace{3pt}}}
+%\newcommand{\PVS}{\textcolor{HIOAcolor}{\tt PVS\hspace{3pt}}}
+%\newcommand{\PVSnogap}{\textcolor{HIOAcolor}{\tt PVS\hspace{1pt}}}
+%\newcommand{\HIOAbiggap}{\textcolor{HIOAcolor}{\tt HIOA\hspace{6pt}}}
+%\newcommand{\HIOAnogap}{\textcolor{HIOAcolor}{\tt HIOA}}
+%\newcommand{\anyrelation}{\lessgtr}
 
 % Transformation for ADT
 \newcommand{\SC}[2]{\relax\ifmmode {\tt Scount}(#1,#2) \else ${\tt Scount}(#1,#2)$\fi} 
@@ -254,27 +220,27 @@
 \newcommand{\Assumes}{{\bf assumes}}
 \newcommand{\Backward}{{\bf backward}}
 \newcommand{\By}{{\bf by}}
-\newcommand{\Case}{{\bf case}}
+%\newcommand{\Case}{{\bf case}}
 \newcommand{\Choose}{{\bf  choose}}
 \newcommand{\Components}{{\bf components}}
 \newcommand{\Const}{{\bf const}}
 \newcommand{\Converts}{{\bf converts}}
 \newcommand{\Do}{{\bf do}}
 \newcommand{\Eff}{{\bf eff}}
-\newcommand{\Else}{{\bf else}}
+%\newcommand{\Else}{{\bf else}}
 \newcommand{\Elseif}{{\bf elseif}}
 \newcommand{\Enumeration}{{\bf enumeration}}
 \newcommand{\Ensuring}{{\bf ensuring}}
 \newcommand{\Exempting}{{\bf exempting}}
 \newcommand{\Fi}{{\bf fi}}
-\newcommand{\For}{{\bf for}}
+%\newcommand{\For}{{\bf for}}
 \newcommand{\Forward}{{\bf forward}}
 \newcommand{\Freely}{{\bf freely}}
 \newcommand{\From}{{\bf from}}
 \newcommand{\Generated}{{\bf generated}}
 \newcommand{\Local}{{\bf local}}
 \newcommand{\Hidden}{{\bf hidden}}
-\newcommand{\If}{{\bf if}}
+%\newcommand{\If}{{\bf if}}
 \newcommand{\In}{{\bf in}}
 \newcommand{\Implies}{{\bf implies}}
 \newcommand{\Includes}{{\bf includes}}
@@ -282,13 +248,14 @@
 \newcommand{\Input}{{\bf input}}
 \newcommand{\Kind}{{\bf kind}}
 \newcommand{\Initially}{{\bf initially}}
+\newcommand{\Init}{{\bf init}}
 \newcommand{\Internal}{{\bf internal}}
 \newcommand{\Invariant}{{\bf invariant}}
 \newcommand{\Od}{{\bf od}}
 \newcommand{\Of}{{\bf of}}
 \newcommand{\Output}{{\bf output}}
 \newcommand{\Partitioned}{{\bf partitioned}}
-%\newcommand{\Pre}{{\bf pre}}
+\newcommand{\Pre}{{\bf pre}}
 \newcommand{\Signature}{{\bf signature}}
 \newcommand{\Simulation}{{\bf simulation}}
 \newcommand{\Sort}{{\bf sort}}
@@ -304,7 +271,7 @@
 \newcommand{\Union}{{\bf union}}
 \newcommand{\Uses}{{\bf uses}}
 \newcommand{\Where}{{\bf where}}
-\newcommand{\While}{{\bf while}}
+%\newcommand{\While}{{\bf while}}
 \newcommand{\With}{{\bf with}}
 
 
@@ -313,24 +280,46 @@
 \newcommand{\BBB}{\hspace{-0.1in}}
 
 
-\newcommand{\deq}{\mathrel{\stackrel{\scriptscriptstyle\Delta}{=}}}
+%\newcommand{\deq}{\mathrel{\stackrel{\scriptscriptstyle\triangle}{=}}}
+\newcommand{\deq}{\overset{\scriptscriptstyle\triangle}{=}}
 
 
 % systematic labels
 
 \newcommand{\seclabel}[1]{\label{sec:#1}}
+\newcommand{\lemlabel}[1]{\label{lemma:#1}}
+\newcommand{\corlabel}[1]{\label{cor:#1}}
 \newcommand{\secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\sslabel}[1]{\label{ss:#1}}
+\newcommand{\ssref}[1]{Subsection~\ref{ss:#1}}
 \newcommand{\secreftwo}[2]{Sections~\ref{sec:#1}~and~\ref{sec:#2}}
+\newcommand{\secrefthree}[3]{Sections~\ref{sec:#1},~\ref{sec:#2},~and~\ref{sec:#3}}
 \newcommand{\figlabel}[1]{\label{fig:#1}}
 \newcommand{\figref}[1]{Figure~\ref{fig:#1}}
-\newcommand{\figrefs}[2]{Figures~\ref{fig:#1} and~\ref{fig:#2}}
+\newcommand{\figreftwo}[2]{Figures~\ref{fig:#1}~and~\ref{fig:#2}}
+\newcommand{\figrefs}[3]{Figures~\ref{fig:#1},~\figref{fig:#2},~and~\ref{fig:#3}}
 \newcommand{\applabel}[1]{\label{app:#1}}
 \newcommand{\appref}[1]{Appendix~\ref{app:#1}}
 \newcommand{\lnlabel}[1]{\label{line:#1}}
+\newcommand{\thmlabel}[1]{\label{thm:#1}}
+\newcommand{\invlabel}[1]{\label{inv:#1}}
 \newcommand{\lnrngref}[2]{lines~\ref{line:#1}--\ref{line:#2}\xspace}
+\newcommand{\lnsref}[2]{lines~\ref{line:#1}--\ref{line:#2}\xspace}
 \newcommand{\lnref}[1]{line~\ref{line:#1}\xspace}
+\newcommand{\lnreftwo}[2]{lines~\ref{line:#1}~and~\ref{line:#2}\xspace}
+%\newcommand{\lnrefthru}[2]{lines~\ref{line:#1}~through~\ref{line:#2}\xspace}
 \newcommand{\thmref}[1]{Theorem~\ref{thm:#1}\xspace}
+\newcommand{\corollaryref}[1]{Corollary~\ref{cor:#1}\xspace} % NOTE: corref was overriden in TCS style sheet, be careful
+\newcommand{\lmref}[1]{Lemma~\ref{lemma:#1}\xspace}
+\newcommand{\lemref}[1]{Lemma~\ref{lemma:#1}\xspace}
+\newcommand{\invref}[1]{Invariant~\ref{inv:#1}\xspace}
 
+\newcommand{\assref}[1]{Assumption~\ref{ass:#1}\xspace}
+\newcommand{\asslabel}[1]{\label{ass:#1}}
+\newcommand{\assreftwo}[2]{Assumptions~\ref{ass:#1}~and~\ref{ass:#2}\xspace}
+
+%\newcommand{\eqref}[1]{(\ref{eq:#1})\xspace}
+\newcommand{\eqlabel}[1]{\label{eq:#1}}
 
 % defs FROM ptioa PAPER
 
@@ -348,20 +337,20 @@
 
 \newcommand{\Trajeq}{\relax\ifmmode {\mathcal R}_\T \else ${\mathcal R}_\T$\fi} 
 \newcommand{\Acteq}{\relax\ifmmode {\mathcal R}_A \else ${\mathcal R}_A$\fi} 
-\newcommand{\noop}{\relax\ifmmode \lambda \else $\lambda$\fi} 
+%\newcommand{\noop}{\relax\ifmmode \lambda \else $\lambda$\fi} 
 \newcommand{\close}[1]{\relax\ifmmode \overline{#1} \else $\overline{#1}$\fi} 
 
 \newcommand{\corrtasks}{\mathop{\mathsf {c}}}
 \newcommand{\full}{\mathop{\mathsf {full}}}
-%\newcommand{\fstate}{\mathop{\mathsf {fstate}}}
-%\newcommand{\lstate}{\mathop{\mathsf {lstate}}}
+\newcommand{\fstate}{\mathop{\mathsf {fstate}}}
+\newcommand{\lstate}{\mathop{\mathsf {lstate}}}
+\newcommand{\ltime}{\mathop{\mathsf {ltime}}}
 \newcommand{\tdist}{\mathop{\mathsf {tdist}}}
 \newcommand{\extbeh}{\mathop{\mathsf {extbeh}}}
 %\newcommand{\apply}{\mathop{\mathsf {apply}}}
 \newcommand{\apply}[2]{\mathop{\mathsf {apply}({#1},{#2})}}
 %\newcommand{\applytwo}{\mathop{\mathsf {apply2}}}
 \newcommand{\support}{\mathop{\mathsf {supp}}}
-\newcommand{\maxrng}{\mathop{\mathsf {max}}}
 \newcommand{\relation}{\mathrel{R}}
 \newcommand{\cone}{C}
 %\newcommand{\tracef}{\mathord{\mathsf {trace}}}
@@ -397,16 +386,7 @@
 \newcommand{\rand}{{\operatorname{\mathsf {random}}}}
 \newcommand{\unif}{{\operatorname{\mathsf {unif}}}}
 
-\newcommand{\ie}{i.e.,\xspace}
-\newcommand{\Ie}{I.e.,\xspace}
-
-\newcommand{\eg}{e.g.,\xspace}
-\newcommand{\Eg}{E.g.,\xspace}
-
 % IOA related stuff
-
-
-
 
 \newcommand{\mybox}[3]{
   \framebox[#1][l]
@@ -419,17 +399,16 @@
 }
 
 \newcommand{\two}[4]{
-  \parbox{.98\columnwidth}{\vspace{1pt} \vfill
+  \parbox{.95\columnwidth}{\vspace{1pt} \vfill
     \parbox[t]{#1\columnwidth}{#3}%
-    \hspace{.5cm}
     \parbox[t]{#2\columnwidth}{#4}%
   }}
 
 \newcommand{\twosep}[4]{
-  \parbox{\columnwidth}{\vspace{1pt} \vfill
-    \parbox[t]{#1\columnwidth}{#3}%
-        \vrule width 0.2pt
-    \parbox[t]{#2\columnwidth}{#4}%
+  \parbox{\linewidth}{\vspace{1pt} \vfill
+    \parbox[t]{#1\linewidth}{#3}%
+   	\vrule width 0.2pt
+    \parbox[t]{#2\linewidth}{#4}%
   }}
 
 \newcommand{\eqntwo}[4]{
@@ -483,24 +462,27 @@
   flexiblecolumns=true,
 %  basewidth=0.5em,
   basewidth=0.05em,
+  escapeinside={(*@}{@*)},
   moredelim=[il][\rm]{//},
   moredelim=[is][\sf \figuresize]{!}{!},
   moredelim=[is][\bf \figuresize]{*}{*},
-  keywords={automaton,and, 
-         choose,const,continue, components,
-         discrete, do, derived,
-         eff, external,else, elseif, evolve, end,each,
-         fi,for, forward, from,
-         hidden,
-         in,input,internal,if,invariant, initially, imports,
+  keywords={automaton,and, abstract,
+  	 choose,const,continue, components,
+  	 discrete, do,
+  	 each,eff, external,else, elseif, evolve, end,
+  	 fi,for, forward, from, func,
+  	 hidden,
+  	 in,input,internal,if,invariant, init,initially, imports,
      let,
      or, output, operators, od, of,
-     pre, prob,
+     pre, pass,
      return,
-     such,satisfies, stop, signature, simulation, state, stochastic,
+     such,satisfies, stop, signature, simulation, 
      trajectories,trajdef, transitions, that,then, type, types, to, tasks,
-     variables, vocabulary, uni,
-     when,where, with,while},
+     variables, vocabulary, 
+     when,where, with,while,
+		private,shared,
+        controller, plant},
   emph={set, seq, tuple, map, array, enumeration},   
    literate=
         {(}{{$($}}1
@@ -539,6 +521,7 @@
         % LSL symbols (two characters)
         {\\A}{{$\forall\ $}}1
         {\\E}{{$\exists\ $}}1
+        {\\nE}{{$\nexists\ $}}1
         {\\/}{{$\vee\,$}}1
         {\\vee}{{$\vee\,$}}1
         {/\\}{{$\wedge\,$}}1
@@ -680,9 +663,8 @@
   identifierstyle=\small,
 %  commentline=\%,
   keywords={assumes,automaton,axioms,backward,bounds,by,case,choose,components,const,d,det,discrete,do,eff,else,elseif,ensuring,enumeration,evolve,fi,fire,follow,for,forward,from,hidden,if,in,%
-    input,initially,internal,invariant,let, local,od,of,output,pre,schedule,signature,so,%
-    simulation,states,state,variables, tasks, stop,tasks,that,then,to,trajdef,trajectory,trajectories,transitions,tuple,type,
-    uniform,union,urgent,uses,when,where,while,yield},
+    input,init,initially,internal,invariant,let, local,od,of,output,pre,schedule,signature,so,%
+    simulation,states,variables, tasks, stop,tasks,that,then,to,trajdef,trajectory,trajectories,transitions,tuple,type,union,urgent,uses,when,where,while,yield},
   literate=
         % LaTeX math symbols
         {\\in}{{$\in$}}1
@@ -773,8 +755,8 @@
   {\csname lst@SaveFirstLabel\endcsname\noindent}
 
 
-\newcommand{\true}{\relax\ifmmode \mathit true \else \em true \/\fi}
-\newcommand{\false}{\relax\ifmmode \mathit false \else \em false \/\fi}
+\newcommand{\true}{\relax\ifmmode \mathit{true} \else \emph{true} \/\fi}
+\newcommand{\false}{\relax\ifmmode \mathit{false} \else \emph{false} \/\fi}
 
 
 
@@ -903,7 +885,6 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
 \def\T{{\cal T}} % set of trajectories
 
 % VALUATIONS
-\newcommand{\vu}{{\bf u}}
 \newcommand{\vv}{{\bf v}}
 \newcommand{\vw}{{\bf w}}
 \newcommand{\vx}{{\bf x}}
@@ -919,10 +900,7 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
 \newcommand{\sarrow}[2]{\mathrel{\stackrel{#1}{\rightarrow_{#2}}}}
 \newcommand{\concat}{\mathbin{^{\frown}}} % concatenation
 \newcommand{\paste}{\mathrel{\diamond}}
-\newcommand{\Arrow}[1]{\mathrel{\stackrel{#1}{\Longrightarrow}}}
 
-
-\newcommand{\und}{{\tt U}} 
 % AUTOMATA
 %\def\A{{\cal A}}
 %\def\B{{\cal B}}
@@ -949,14 +927,14 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
   moredelim=[il][\rm]{//},
   moredelim=[is][\sf \figuresize]{!}{!},
   moredelim=[is][\bf \figuresize]{*}{*},
-  keywords={and, 
-         begin,
-         cases, const,
-         do,
-         external, else, exists, end, endcases, endif,
-         fi,for, forall, from,
-         hidden,
-         in, if, importing,
+  keywords={and, abstract, 
+  	 begin,
+  	 cases, const,
+  	 do,
+  	 external, else, exists, end, endcases, endif,
+  	 fi,for, forall, from,
+  	 hidden,
+  	 in, if, importing,
      let, lambda, lemma,
      measure, 
      not,
@@ -1082,13 +1060,13 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
   moredelim=[is][\sf \figuresize]{!}{!},
   moredelim=[is][\bf \figuresize]{*}{*},
   keywords={and, 
-         begin,
-         cases, const,
-         do, datatype,
-         external, else, exists, end, endif, endcases,
-         fi,for, forall, from,
-         hidden,
-         in, if, importing,
+  	 begin,
+  	 cases, const,
+  	 do, datatype,
+  	 external, else, exists, end, endif, endcases,
+  	 fi,for, forall, from,
+  	 hidden,
+  	 in, if, importing,
      let, lambda, lemma,
      measure,
      not,
@@ -1191,7 +1169,7 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
         {\\gamma}{{$\gamma$}}1
         {\\ell}{{$\ell\ $}}1
         {--}{{$-\ $}}1
-        {\\TT}{{\hspace{1.5em}}}3        
+        {\\TT}{{\hspace{1.5em}}}3
       }
 
 \lstdefinelanguage{pvsNums}[]{pvs}
@@ -1278,3 +1256,239 @@ $\mathord{\mathcode`-="702D\it #1\mathcode`\-="2200}$\fi}
   flexiblecolumns=true,
   basewidth=0.05em,
 }
+
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\pair}[1]{\left\langle#1\right\rangle}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\norm}[1]{\left\lvert\left\lvert#1\right\rvert\right\rvert}
+\newcommand{\argmin}[2]{\underset{#2}{\operatorname{argmin}} #1}
+\newcommand{\argmax}[2]{\underset{#2}{\operatorname{argmax}} #1}
+\newcommand{\maxel}[2]{\underset{#2}{\operatorname{max}} #1}
+\newcommand{\minel}[2]{\underset{#2}{\operatorname{min}} #1}
+\newcommand{\sgn}[1]{\operatorname{sgn} \left( #1 \right)}
+\newcommand{\lima}[2]{\underset{#2}{\operatorname{lim}} #1}
+
+%\newtheorem{theorem}{Theorem}
+
+
+\def\Conv{\mathtt{Conv}}
+
+\def\colorc{\mathit{[c]}}
+\def\colord{\mathit{[d]}}
+
+
+\def\NEPrev{{\mathit{NEPrev}}}
+\def\NEPrevi{\NEPrev_i}
+\def\NEPrevs{\NEPrev_s}
+\def\Members{{\mathit{Entities}}}
+\def\Membersi{\Members_i}
+%\def\Mne{\mathit{ne}}
+%\def\Mnei{\Mne_i} % members i was non-empty
+\def\Membersj{\Members_j}
+%\def\Mnej{\Mne_j} % members j was non-empty
+\def\signal{{\mathit{signal}}}
+\def\signali{\signal_i}
+\def\signalj{\signal_j}
+\def\signals{\signal_s}
+\def\token{{\mathit{token}}}
+\def\tokeni{\token_i}
+\def\next{{\mathit{next}}}
+\def\nexti{\next_i}
+\def\nextic{\nexti\colorc}
+\def\nextj{\next_j}
+\def\nextjc{\nextj\colorc}
+\def\nextjd{\nextj\colord}
+\def\dist{{\mathit{dist}}}
+\def\disti{\dist_i}
+\def\distj{\dist_j}
+\def\distic{\disti\colorc}
+\def\distjc{\distj\colorc}
+\def\failed{{\mathit{failed}}} % failed
+\def\failedi{\failed_i}
+
+\def\fd{\mathit{fd}} % failure detection bit
+\def\fdi{\fd_i}
+\def\fdj{\fd_j}
+
+\def\Nbrs{{\mathit{Nbrs}}} % neighbors
+\def\Nbrsi{\Nbrs_i}
+\def\Nbrsj{\Nbrs_j}
+\def\Nbrss{\Nbrs_s}
+\def\ID{\mathit{ID}}
+\def\SID{\mathit{ID}_S}
+\def\TID{\mathit{ID}_T}
+
+\def\nsides{S}
+\def\nsidesi{\nsides_i}
+\def\nsidesj{\nsides_j}
+
+\def\tid{\mathit{tid}}
+\def\tidc{\tid_c}
+\def\sid{\mathit{sid}}
+\def\sidc{\sid_c}
+
+\def\NF{\mathit{NF}}
+\def\TC{\mathit{TC}}
+
+\def\GR{\mathit{G_R}}
+\def\ER{\mathit{E_R}} 
+\def\VR{\mathit{V_R}} 
+\def\CSC{\mathit{CSC}} % color shared cells
+\def\SC{\mathit{SC}} % shared colors (of the color-shared cells)
+
+\def\GE{\mathit{G_E}} % entity graph
+\def\EE{\mathit{E_E}}
+\def\VE{\mathit{V_E}}
+
+\def\GT{\mathit{G_T}}
+\def\ET{\mathit{E_T}}
+\def\VT{\mathit{V_T}}
+
+\def\etype{\mathit{color}} % entity type/color
+\newcommand{\etypeCommand}[1]{\etype(#1)} % entity type/color
+\def\etypep{\etypeCommand{p}}
+\def\etypeq{\etypeCommand{q}}
+\def\etypei{\etype_i}
+\def\etypej{\etype_j}
+
+
+\def\Route{\mathit{Route}}
+\def\Lock{\mathit{Lock}}
+\def\Signal{\mathit{Signal}}
+\def\Move{\mathit{Move}}
+
+
+
+\def\incenter{\mathit{ic}}
+\def\incenteri{\incenter_i}
+\def\incenterj{\incenter_j}
+
+\def\rhoc{\rho_c}
+
+\def\path{\mathit{path}}
+\def\pathi{\path_i}
+\def\pathic{\pathi\colorc}
+\def\pathid{\pathi\colord}
+\def\pathj{\path_j}
+\def\pathjc{\pathj\colorc}
+\def\pint{\mathit{pint}}
+\def\pinti{\pint_i}
+\def\pints{\pint_s}
+\def\pintic{\pinti\colorc}
+\def\pintsc{\pints\colorc}
+\def\lock{\mathit{lock}}
+\def\locki{\lock_i}
+\def\lockj{\lock_j}
+\def\lockic{\locki\colorc}
+\def\lockid{\locki\colord}
+\def\lockjc{\lockj\colorc}
+\def\nlock{\mathit{nlock}}
+\def\nlocki{\nlock_i}
+\def\nlockic{\nlocki\colorc}
+
+\def\lockcolors{\mathit{lcs}}
+\def\lockcolorsi{\lockcolors_i}
+
+\def\Safe{\mathit{Safe}}
+\def\Safei{\Safe_i}
+
+\def\Cell{{\auto{Cell}}}
+\def\Celli{\Cell_i}
+\def\Cellj{\Cell_j}
+\def\Cellm{\Cell_m}
+\def\System{{\auto{System}}}
+
+
+
+%\def\FaceRegion{\mathit{FR}}
+\def\SideNormal{n}
+\def\SideNormalij{\SideNormal(i,j)}
+%\def\VelocityNormal{u}
+%\def\VelocityNormalij{u(i,j)}
+
+\def\MoveVector{u}
+\def\MoveVectorij{\MoveVector(i,j)}
+\def\Side{\mathit{Side}}
+\def\Sideij{\Side(i,j)}
+
+
+\newcommand{\interior}[1]{#1^{\circ}}
+\newcommand{\bdry}[1]{\partial #1}
+\newcommand{\closure}[1]{\overline{#1}}
+
+\def\EntityIdx{{\mathit{I}}}
+
+\def\partition{{\mathit{P}}}
+\def\partitioni{\partition_i}
+\def\partitionj{\partition_j}
+
+
+\newcommand{\EntityDisc}[2]{\mathit{B(#1, #2)}}
+\def\EntityDiscpr{\EntityDisc{p}{r}}
+\def\EntityDiscpl{\EntityDisc{p}{\l}}
+\def\EntityDiscpd{\EntityDisc{p}{\d}}
+
+\newcommand{\ns}[1]{\mathit{ns}(#1)}
+\def\nsi{\ns{i}}
+
+\def\transferRegion{\mathit{TR}}
+\def\innerTransferRegion{\mathit{ITR}}
+\def\transferRegioni{\transferRegion_i}
+\def\innerTransferRegioni{\innerTransferRegion_i}
+\def\transferRegionj{\transferRegion_j}
+\def\innerTransferRegionj{\innerTransferRegion_j}
+\def\transferRegionis{\transferRegioni(s)}
+\def\innerTransferRegionis{\innerTransferRegion_i(s)}
+\def\transferRegionjs{\transferRegionj(s)}
+\def\innerTransferRegionjs{\innerTransferRegion_j(s)}
+
+\def\transferScale{\lambda_t}
+\def\safetyRegion{\mathit{SR}}
+\def\safetyRegioni{\safetyRegion_i}
+\def\safetyRegionj{\safetyRegion_j}
+\def\safetyRegionis{\safetyRegioni(s)}
+\def\safetyRegionjs{\safetyRegionj(s)}
+\def\safetyScale{\lambda_s}
+
+\def\Bdry{\partial}
+\def\bdryi{\bdry{\partitioni}}
+\def\bdryj{\bdry{\partitionj}}
+
+\def\Env{\mathit{Env}}
+
+\def\Vertices{\mathit{V}}
+\def\Verticesi{\Vertices_i}
+\def\Verticesj{\Vertices_j}
+%\def\ResetEntity{\mathit{ResetEntity}}
+
+
+\def\l{{\mathit{l}}}
+\def\v{{\mathit{v}}}
+\def\d{{\mathit{d}}}
+\def\rs{{\mathit{r_s}}}
+
+
+\def\nextc{\next\colorc}
+\def\pintc{\pint\colorc}
+\def\pathc{\path\colorc}
+\def\lockcolorsc{\lockcolors\colorc}
+
+\def\nextic{\nexti\colorc}
+\def\nextjc{\nextj\colorc}
+\def\distc{\dist\colorc}
+\def\distic{\disti\colorc}
+\def\pathic{\pathi\colorc}
+\def\lockic{\locki\colorc}
+\def\nlockic{\nlocki\colorc}
+\def\lockcolorsic{\lockcolorsi\colorc}
+
+\def\pc{\overline{p}}
+\def\qc{\overline{q}}
+
+
+% predicate detection for stabilized routes
+% this avoids using rounds, that were only being used to detect stabilization of the graphs, which in the worst case is: round > $2\Delta
+% note: routes fixed is a stabilizing property, can use results of, e.g., lynch p.633
+% refs for predicate detection in faulty: garg1998icdcs,gartner2001sss
+\def\detectRoutesStabilized{\mathit{detectRoutesStabilized()}}

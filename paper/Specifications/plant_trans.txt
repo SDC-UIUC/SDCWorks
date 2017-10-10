@@ -1,0 +1,30 @@
+	Plant Transitions:
+		for each $v \in V$
+			if $\action(v) = \move$ then
+				for each $w \in \bag(v)$
+					$\pos(w) := \pos(w) - 1$
+                             
+			if $\action(v) = \op \in \OP$ then
+				$\mi{do}(\op)$
+                                           
+			if $\action(v) = \optop$ then
+				$w' :=$ choose $\bag(\verttop)$
+				$\req(w') :=$ choose $R \in \mathcal{R}$
+				$\loc(w') := v$
+				$\pos(w') := \len(\queue(v))$
+				$\status(v) := \waiting$
+				$\widgettime(w') := \timer$
+
+			if $\action(v) = \opbot$ then
+				$w' := \pop(\queue(v))$
+				$\loc(w') := \vertbot$
+				$\widgettime(w') := \timer - \widgettime(w')$
+
+			if $\action(v) = \transfer$ then
+				$w' := pop(queue(v))$
+				$\loc(w') := \nexttr(v)$
+				$\pos(w') := len(queue(\nexttr(v)))$
+				$\status(v) := idle$ 
+                
+			if $\action(v) = \noop$ then
+				pass                

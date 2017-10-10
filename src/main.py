@@ -1,4 +1,4 @@
-from simulator.controller import Controller
+from custom.controller import Controller
 from simulator.network import Network
 from simulator.plant import Plant
 from simulator.requirements import Requirements
@@ -50,10 +50,9 @@ def main(dir_idx=None):
     requirements = Requirements(requirements_yaml)
     network = Network()
 
+    plant = Plant(plant_yaml, network, requirements)
     controller = Controller(network, requirements)
-    plant = Plant(plant_yaml, network)
 
-    #algorithm = algorithms[algo_key](plant, requirements)
     simulator = Simulator(plant, controller, requirements, directory)
 
     # Simulate system
