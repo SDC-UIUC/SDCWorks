@@ -12,7 +12,7 @@ options are specified as follows:
 For the program to run correctly, the user-specified directory will require a
 plant.yaml and a requirements.yaml file. 
 ```
-...<user-specified directory>/
+...user-specified directory/
     plant.yaml
     requirements.yaml
 ```
@@ -38,32 +38,32 @@ specifications of the input files:
 ```
 cells:
     - source:
-        name: <CELL_NAME>
-        length: <LENGTH>
+        name: CELL_NAME
+        length: LENGTH
 
     - sink:
-        name: <CELL_NAME>
-        length: <LENGTH>
+        name: CELL_NAME
+        length: LENGTH
 
     - cell:
-        name: <CELL_NAME>
-        length: <LENGTH>
+        name: CELL_NAME
+        length: LENGTH
         operations:
-            - [<OP_NAME>, <OP_DURATION>]
+            - [OP_NAME, OP_DURATION]
             
 conveyors:
     - conveyor:
-        length: <LENGTH>
-        prev: [<CELL_NAME>]
-        next: [<CELL_NAME>]
+        length: LENGTH
+        prev: [CELL_NAME]
+        next: [CELL_NAME]
 
 ```
 
 Variables:
-* <CELL_NAME>   (type string): unique cell name 
-* <OP_NAME>     (type string): name of operation
-* <OP_DURATION> (type int): duration of operation
-* <LENGTH>      (type integer): specifies the length of a cell's queue
+* CELL_NAME   (type string): unique cell name 
+* OP_NAME     (type string): name of operation
+* OP_DURATION (type int): duration of operation
+* LENGTH      (type integer): specifies the length of a cell's queue
 
 A plant may only have one source and one sink at the moment. There can be
 arbitrarily many cell/conveyor definitions as necessary to model a plant
@@ -76,18 +76,18 @@ operations assigned to it.
 ```
 requirements:
     - requirement:
-        name: <REQ_NAME>
+        name: REQ_NAME
         nodes:
-            - [<REQ_NODE_NAME>, <OP_NAME>]
-        root: <REQ_NODE_NAME>
+            - [REQ_NODE_NAME, OP_NAME]
+        root: REQ_NODE_NAME
         edges:
-            - [<REQ_NODE_NAME>, [<REQ_NODE_NAME>, ...]]
+            - [REQ_NODE_NAME, [REQ_NODE_NAME, ...]]
 ```
 
 Variables:
-* <REQ_NAME>        (type string): unique requirement name
-* <REQ_NODE_NAME>   (type string): unique requirement node name
-* <OP_NAME>         (type string): name of operation specified in plant.yaml
+* REQ_NAME        (type string): unique requirement name
+* REQ_NODE_NAME   (type string): unique requirement node name
+* OP_NAME         (type string): name of operation specified in plant.yaml
 
 There can be multiple requirement definitions in a single file. A requirement
 can have arbitrarily many nodes and edges but may only have a single root. To
