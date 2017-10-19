@@ -1,14 +1,17 @@
 cells:
     - source:
         name: "Source"
+        length: 2
 
     - cell:
         name: "A"
+        length: 3
         operations:
             - ["a", 5]
 
     - sink:
         name: "Sink"
+        length: 2
 
 conveyors:
     - conveyor:

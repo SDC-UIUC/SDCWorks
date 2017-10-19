@@ -5,6 +5,8 @@ from generic.controller import GenericController
 from generic.graph import GenericGraph, GenericGraphNode
 import os, pickle
 
+import pdb
+
 class CustomController(GenericController):
     def __init__(self, requirements, plant, metrics):
         self._requirements = requirements
@@ -109,7 +111,7 @@ class CustomController(GenericController):
                         cell.action = "NOP"
 
                 # Transfer from conveyor to cell
-                if len(cell._queue) < cell._queue.maxlen:
+                if cell.can_enqueue():
                     func = lambda c: c.wait_time
                     conv = max(cell.get_prevs(), key=func)
                     if self._try_transfer(conv):
@@ -129,21 +131,21 @@ class CustomController(GenericController):
             # Handle source actions
             elif cell.type == "source":
                 cell.widget_inst = None
-                widget = cell.head()
-                if isinstance(widget, CustomWidget):
+                cell.action = "NOP"
+                if isinstance(cell.head(), CustomWidget):
                     if self._try_transfer(cell):
                         cell.action = "transfer"
-                    else:
-                        cell.action = "NOP"
-                else:
+
+                if cell.action == "NOP" and cell.can_enqueue():
                     cell.action = "instantiate"
                     req_name = self._req_keys[self._req_which]
                     self._req_which = (self._req_which + 1) % len(self._req_keys)
 
+                    # Instantiate new widget
                     new_widget = CustomWidget(req_name)
                     new_widget.feasible_ptr = self._feasible_graphs[req_name].root
                     new_widget.processing_time = cur_time
-                    self._widgets[new_widget.id] = widget
+                    self._widgets[new_widget.id] = new_widget
                     cell.widget_inst = new_widget
 
                     # Update metrics data
@@ -173,7 +175,7 @@ class CustomController(GenericController):
                     cell.action = "NOP"
                     
                 # Transfer from conveyor to cell
-                if len(cell._queue) < cell._queue.maxlen:
+                if cell.can_enqueue():
                     func = lambda c: c.wait_time
                     conv = max(cell.get_prevs(), key=func)
                     if self._try_transfer(conv):

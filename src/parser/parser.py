@@ -60,6 +60,9 @@ def _parse_cell(cell_dict):
         raise KeyError("No key '%s' in %s" % (key, cell_dict))
 
     name = cell_dict["name"]
+    length = 1
+    if "length" in cell_dict:
+        length = cell_dict["length"]
 
     # Cell
     ops = set()
@@ -68,6 +71,7 @@ def _parse_cell(cell_dict):
 
     cell_attrs = {
         "name": name,
+        "length": length,
         "ops":  ops,
     }
 
@@ -91,7 +95,7 @@ def _parse_sink(sink_dict):
        
 def _parse_conveyor(conv_dict):
     # Check keys
-    keys = ["length", "prev", "next"]
+    keys = ["prev", "next"]
     for key in keys:
         if key not in conv_dict:
             raise ValueError("No key '%s' in '%s'" % (key, conv_dict))

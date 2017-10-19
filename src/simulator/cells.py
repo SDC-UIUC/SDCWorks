@@ -7,11 +7,9 @@ from simulator.operations import Operation
 import pdb
 
 class Cell(CustomCell):
-    def __init__(self, name, ops=None):
+    def __init__(self, name, length=1, ops=None):
         super().__init__(name, "cell", ops=ops)
-
-        # FIXME
-        self._queue = deque(maxlen=3)
+        self._queue = deque(maxlen=length)
 
     def __str__(self):
         action_str = "Action: " + str(self.action)
@@ -31,12 +29,7 @@ class Cell(CustomCell):
             "" + queue_str + "\n"
         )
         return cell_str
-
-    def can_enqueue(self):
-        if len(self._queue) < self._queue.maxlen:
-            return True
-        return False
-
+    
     def enqueue(self, widget):
         assert len(self._queue) < self._queue.maxlen
         self._queue.append(widget)
@@ -47,7 +40,7 @@ class Cell(CustomCell):
     def update(self, cur_time):
         # Determine which action to perform
         if self.action == "transfer":
-            self._transfer_widget(self.type)
+            self._transfer_widget()
         elif self.action in self.ops:
             pass
         else:
@@ -89,12 +82,7 @@ class Conveyor(CustomCell):
             "" + queue_str + "\n"
         )
         return conv_str
-
-    def can_enqueue(self):
-        if isinstance(self._queue[-1], type(None)):
-            return True
-        return False
-
+    
     def enqueue(self, widget):
         assert isinstance(self._queue[-1], type(None))
         self._queue[-1] = widget
@@ -109,14 +97,14 @@ class Conveyor(CustomCell):
             self._queue.append(None)
             self._move_widgets()
         elif self.action == "transfer":
-            self._transfer_widget(self.type)
+            self._transfer_widget()
         elif self.action in self.ops:
             pass
         else:
             raise ValueError("Conveyor received invalid action: %s" % (self.action))
 
 class Source(CustomCell):
-    def __init__(self, name):
+    def __init__(self, name, length=1):
         super().__init__(name, "source")
 
         self.dot_attrs.update({
@@ -124,7 +112,7 @@ class Source(CustomCell):
             "fillcolor": "green",
         })
 
-        self._queue = deque(maxlen=1)
+        self._queue = deque(maxlen=length)
         inst = Operation("INSTANTIATE", 0)
         self.ops[inst.name] = inst
 
@@ -145,14 +133,9 @@ class Source(CustomCell):
             "" + queue_str + "\n"
        ) 
         return source_str 
-
-    def can_enqueue(self):
-        if len(self._queue) < self._queue.maxlen:
-            return True
-        return False
-
+    
     def enqueue(self, widget):
-        assert len(self._queue) < self._queue.maxlen
+        assert self.can_enqueue() == True
         self._queue.append(widget)
 
         widget.loc = self
@@ -164,14 +147,14 @@ class Source(CustomCell):
             widget = self.widget_inst
             self.enqueue(widget) 
         elif self.action == "transfer":
-            self._transfer_widget(self.type) 
+            self._transfer_widget() 
         elif self.action in self.ops:
             pass
         else:
             raise ValueError("Source received invalid action: %s" % (self.action))
 
 class Sink(CustomCell):
-    def __init__(self, name):
+    def __init__(self, name, length=1):
         super().__init__(name, "sink")
 
         self.dot_attrs.update({
@@ -179,7 +162,7 @@ class Sink(CustomCell):
             "fillcolor": "red",
         })
 
-        self._queue = deque(maxlen=1)
+        self._queue = deque(maxlen=length)
         term = Operation("TERMINATE", 0)
         self.ops[term.name] = term
 
@@ -200,14 +183,9 @@ class Sink(CustomCell):
             "" + queue_str + "\n"
         )
         return sink_str
-
-    def can_enqueue(self):
-        if len(self._queue) < self._queue.maxlen:
-            return True
-        return False
-
+    
     def enqueue(self, widget):
-        assert len(self._queue) < self._queue.maxlen
+        assert self.can_enqueue() == True
         self._queue.append(widget)
 
         widget.loc = self

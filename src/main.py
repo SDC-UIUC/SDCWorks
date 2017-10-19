@@ -12,9 +12,9 @@ import pdb
 
 
 def usage():
-    ustr = ("Usage: python3 main.py -a <algorithm> -d <directory>\n",
-            "\n",
-            "\t-d, --directory\t\tdirectory where files are located\n",
+    ustr = ("Usage: python3 main.py -a <algorithm> -d <directory>\n"
+            "\n"
+            "\t-d, --directory\t\tdirectory where files are located\n"
             )
     print(ustr)
 
@@ -30,6 +30,11 @@ def main(dir_idx=None):
         print(err)
         usage()
         sys.exit(2)
+
+    # Print help if no arguments
+    if len(opts) == 0:
+        usage()
+        sys.exit()
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
