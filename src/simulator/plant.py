@@ -1,4 +1,4 @@
-from collections import deque
+from collections import deque, OrderedDict
 from datetime import datetime
 from parser.parser import parse_plant
 from generic.graph import GenericGraph
@@ -12,7 +12,7 @@ import os
 import pdb
 
 class Plant(GenericGraph):
-    def __init__(self, plant_yaml, network, requirements):
+    def __init__(self, plant_yaml, requirements):
         """Builds a conveyance graph from the description provided in the input
         file
 
@@ -23,50 +23,59 @@ class Plant(GenericGraph):
         """
 
         super().__init__("Plant")
-        self.network = network
+
+        # FIXME
+        self.network = None
 
         self.cells = {
             "source": [],
             "cell": [],
             "sink": [],
+            "conveyor": [],
+            "all": OrderedDict()
         }
-        self.cells_dict = {}
 
         # Parse graph YAML
         parsed_cells, parsed_convs = parse_plant(plant_yaml)
 
         # Adds cells to plant
+        temp_dict = {}
         cell_init = { "source": Source, "cell": Cell, "sink": Sink }
         for type, cell_data in parsed_cells.items():
             for cell_datum in cell_data:
-                cell = cell_init[type](network=network, **cell_datum)
-                self.cells_dict[cell.name] = cell
-                self.cells[type].append(cell)
+                cell = cell_init[type](**cell_datum)
+                temp_dict[cell.name] = cell
                 self.add_graph_nodes(cell)
+                self.cells[type].append(cell)
+                self.cells["all"][cell.id] = cell
 
         # Add conveyors to plant
         for conv_datum in parsed_convs:
             prevs = conv_datum.pop("prev")
             nexts = conv_datum.pop("next")
-            conv = Conveyor(network=network, **conv_datum)
+            conv = Conveyor(**conv_datum)
             self.add_graph_nodes(conv)
+            self.cells["conveyor"].append(conv)
+            self.cells["all"][conv.id] = conv
 
             # Connect conveyor previous
             for prev in prevs:
-                prev = self.cells_dict[prev]
+                prev = temp_dict[prev]
                 self.add_graph_edges(prev, conv)
 
             # Connect conveyor next
             for next in nexts:
-                next = self.cells_dict[next]
+                next = temp_dict[next]
                 self.add_graph_edges(conv, next)
 
         # Check if plant satisfies requirements
         self._check_feasibilities(requirements)
 
         # Initialize network with plant function
+        """
         network.add_dispatch_command("plant", "query_cells",
             self.query_cells)
+        """
                 
     def _check_feasibilities(self, requirements):
         # Check each requirement for feasibility
@@ -166,13 +175,16 @@ class Plant(GenericGraph):
                 for prev in cell.get_prevs():
                     queue.append(prev)
                 
+                """
                 # Skip if conveyor
                 if cell.type == "conv":
                     continue
+                """
 
                 # Update cell and all input conveyors
                 cell.update(cur_time)
 
+                """
                 if len(cell.get_prevs()) == 0:
                     continue
 
@@ -191,6 +203,7 @@ class Plant(GenericGraph):
                 
                 if wait_time[0] >= 1:
                     wait_time[1].transfer()
+                """
 
     def log(self):
         queue = deque()

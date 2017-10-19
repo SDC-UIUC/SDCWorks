@@ -1,16 +1,16 @@
 from copy import copy
 from datetime import datetime
-#from generic.graph import Graph, GraphNode
 
 import os, sys
 
 import pdb
 
 class Simulator:
-    def __init__(self, plant, controller, requirements, directory):
+    def __init__(self, plant, controller, requirements, metrics, directory):
         self.controller = controller
         self.plant = plant
         self.requirements = requirements
+        self.metrics = metrics
 
         # Create directories
         self.dot_dir = os.path.join(directory, "dot")
@@ -28,10 +28,6 @@ class Simulator:
         self.data_dir = os.path.join(directory, "data")
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
-
-        self.plot_dir = os.path.join(directory, "plot")
-        if not os.path.exists(self.plot_dir):
-            os.makedirs(self.plot_dir)
 
         # Plant output
         plant_dot_path = os.path.join(self.dot_dir, "plant.dot")
@@ -57,10 +53,11 @@ class Simulator:
         time = -delta_time
         while (time < end_time):
             time += delta_time
-            self.plant.update(time)
 
-            self.controller.update_statistics(time)
-            self.controller.update()
+            # Updates
+            self.controller.update(time)
+            self.plant.update(time)
+            self.metrics.update(time)
 
             # Log and write to file
             log_str = self.plant.log() 
@@ -73,9 +70,9 @@ class Simulator:
         with open(log_path, 'a') as log_file:
             log_file.write(log_str)
 
-        # Save controller statistics
-        #self.controller.plot_statistics()
-        self.controller.save_statistics(self.data_dir)
+        # Save and plot metrics data
+        self.metrics.save_metrics_data()
+        self.metrics.plot_metrics()  
 
         print("Ending simulation")
 

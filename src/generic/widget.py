@@ -10,3 +10,8 @@ class GenericWidget(ABC):
         # Plant variables
         self.position = 0
         self.location = None
+
+        # Controller variables
+        self.processing_time = 0
+        self.completed_ops = []
+        self.plant_path = []

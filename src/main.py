@@ -1,5 +1,5 @@
-from custom.controller import Controller
-from simulator.network import Network
+from custom.controller import CustomController
+from simulator.metrics import Metrics
 from simulator.plant import Plant
 from simulator.requirements import Requirements
 from simulator.simulator import Simulator
@@ -48,12 +48,12 @@ def main(dir_idx=None):
     
     # Initialize classes
     requirements = Requirements(requirements_yaml)
-    network = Network()
+    metrics = Metrics(directory, requirements) 
 
-    plant = Plant(plant_yaml, network, requirements)
-    controller = Controller(network, requirements)
+    plant = Plant(plant_yaml, requirements)
+    controller = CustomController(requirements, plant, metrics)
 
-    simulator = Simulator(plant, controller, requirements, directory)
+    simulator = Simulator(plant, controller, requirements, metrics, directory)
 
     # Simulate system
     END_TIME = 10000

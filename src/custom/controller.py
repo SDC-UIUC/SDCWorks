@@ -1,58 +1,30 @@
+from collections import OrderedDict
 from copy import copy
-from custom.widget import Widget
+from custom.widget import CustomWidget
 from generic.controller import GenericController
 from generic.graph import GenericGraph, GenericGraphNode
 import os, pickle
 
-import pdb
-
-class Controller(GenericController):
-    def __init__(self, network, requirements):
-        self._network = network
+class CustomController(GenericController):
+    def __init__(self, requirements, plant, metrics):
         self._requirements = requirements
+        self.metrics = metrics
 
-        self._feasible_graphs = self._generate_feasibility_graphs(requirements)
+        # All cells
+        self.cells = plant.cells
+
         self._widgets = {}
+        self._feasible_graphs = self._generate_feasibility_graphs(requirements)
 
         # Instantiation
         self._req_keys = list(requirements.keys())
         self._req_which = 0
 
-        # Rename this to completed
-        self._completed = {}
+        # Completed widgets
+        self._completed = OrderedDict()
         for name in requirements.keys():
             self._completed[name] = {}
-
-        # Plot variables
-        self.ticks_per_hour = 3600.0
-
-        self._total_widgets_plot = []
-        self._throughput_plot = {}
-        self._throughput_num = {}
-        self._end_to_end_plot = {}
-        self._end_to_end_sum = {}
-
-        for name in requirements.keys():
-            self._throughput_plot[name] = []
-            self._throughput_num[name] = 0
-            self._end_to_end_plot[name] = []
-            self._end_to_end_sum[name] = 0
-    
-        # Initialize network with controller functions
-        network.add_dispatch_command("controller", "notify_completion",
-            self.notify_completion)
-        network.add_dispatch_command("controller", "notify_enqueue",
-            self.notify_enqueue)
-        network.add_dispatch_command("controller", "notify_termination",
-            self.notify_termination)
-
-        network.add_dispatch_command("controller", "query_instantiate",
-           self.query_instantiate)
-        network.add_dispatch_command("controller", "query_next",
-            self.query_next)
-        network.add_dispatch_command("controller", "query_operation",
-            self.query_operation)
-
+            
     def generate_output_files(self, dot_dir, graph_dir):
         for req_name, feasible_graph in self._feasible_graphs.items():
             fg_file = "fg-%s" % (req_name)
@@ -69,155 +41,170 @@ class Controller(GenericController):
             req_str += "\n"
 
         return req_str
+            
+    def update(self, cur_time):
+        # Update all cell states
+        self._update_one(cur_time)        
 
-    def notify_completion(self, widget_id, op, time):
-        widget = self._widgets[widget_id]
-        if not op == "NOP":
-            widget.completed_ops.append(op)
-        widget.plant_path.append(widget.ptr.name)
-
-        if op == "TERMINATE":
-            self._widgets.pop(widget_id)
-            widget.ptr = None
-            widget.processing_time = time - widget.processing_time
-            req_dict = self._completed[widget.req_name]
-
-            path = tuple(widget.plant_path)
-            if path not in req_dict:
-                req_dict[path] = [widget]
-            else:
-                req_dict[path].append(widget)
-
-            # Plot data
-            self._throughput_num[widget.req_name] += 1
-            self._end_to_end_sum[widget.req_name] += widget.processing_time
-
-    def notify_enqueue(self, widget_id):
-        widget = self._widgets[widget_id]
-        widget.ptr = widget.ptr.best_next
-
-    # TODO check the processing list against requirement 
-    def notify_termination(self, widget_id, op):
-        widget = self._widgets.pop(widget_id)
-        widget.ptr = None
-        self._completed[widget.req_name] = req_dict
-
-    def query_instantiate(self, time):
-        req_name = self._req_keys[self._req_which]
-        self._req_which = (self._req_which + 1) % len(self._req_keys)
-
-        widget = Widget(req_name)
-        widget.ptr = self._feasible_graphs[req_name].root
-        widget.processing_time = time
-        self._widgets[widget.id] = widget
-        return widget, widget.ptr.op
-
-    def query_next(self, widget_id):
-        widget = self._widgets[widget_id]
-        next = widget.ptr.best_next._reference
-        return next
-
-    def query_operation(self, widget_id):
-        widget = self._widgets[widget_id]
-        return widget.ptr.op
-
-    def save_statistics(self, data_dir):
-        # Save total number of widgets
-        data_path = os.path.join(data_dir, "total_widgets.pickle")
-        with open(data_path, 'wb') as data_file:
-            pickle.dump(self._total_widgets_plot, data_file)  
-
-        # Save widgets completed per hour
-        data_path = os.path.join(data_dir, "throughput.pickle")
-        with open(data_path, 'wb') as data_file:
-            pickle.dump(self._throughput_plot, data_file)
-
-        # Save end-to-end average
-        data_path = os.path.join(data_dir, "end-to-end.pickle")
-        with open(data_path, 'wb') as data_file:
-            pickle.dump(self._end_to_end_plot, data_file) 
-
-    # TODO this is a user defined function to set the weights of each of the
-    # nodes. This will be need to be passed in by the user
-    def set_weights(self, cell):
-        #pass
-        
-        weight = 0
-        for elem in cell._reference._queue:
-            if not elem is None:
-                weight += 1
-
-        cell.weight = weight
-        
-    def update_statistics(self, time):
-        # Total number of widgets in the system
-        total_widgets = [time, len(self._widgets)]
-        self._total_widgets_plot.append(total_widgets)
-
-        # Widgets completed per hour
-        for req_id, req_dict in self._completed.items():
-            if time <= 0:
-                req_throughput = 0
-            else:
-                req_throughput = self._throughput_num[req_id] / time * self.ticks_per_hour
-            throughput = [time, req_throughput]
-            self._throughput_plot[req_id].append(throughput)
-
-        # End-to-end average
-        for req_id, req_dict in self._completed.items():
-            if len(req_dict) == 0:
-                end_to_end_average = 0
-            else:
-                end_to_end_average = self._end_to_end_sum[req_id] / self._throughput_num[req_id]
-            end_to_end = [time, end_to_end_average]
-            self._end_to_end_plot[req_id].append(end_to_end)
-        
-    def update(self):
+        # Compute SPF for all requirements
         for req_name, fg in self._feasible_graphs.items():
             visited = set()
-            self._update_cell_control(fg.root, visited)
+            self._compute_spf(req_name, fg.root, visited)
 
-    def _update_cell_control(self, cell, visited):
-        if cell.id in visited:
+        # Update all cell states
+        self._update_two(cur_time)
+
+    def _update_one(self, cur_time):
+       for _, cell in self.cells["all"].items():
+           cell.set_cost()
+
+    def _compute_spf(self, req_name, fg_node, visited):
+        if fg_node.id in visited:
             return
-        visited.add(cell.id)
+        visited.add(fg_node.id)
 
-        # Set the weight of the cell
-        self.set_weights(cell)
-
-        # Recurse through FeasibleGraph
-        nexts = cell.get_nexts()
+        cell = fg_node.reference
+        nexts = fg_node.get_nexts()
         if not nexts:
-            cell.best_next = None
-            return (cell.weight, cell)
+            fg_node.next_transfer = None
+            return (cell.cost, fg_node)
 
-        next_weights = []
+        next_costs = []
         for next in nexts:
-           next_weight = self._update_cell_control(next, visited)
-           next_weights.append(next_weight)
+            next_cost = self._compute_spf(req_name, next, visited)
+            next_costs.append(next_cost)
 
         # Select next with minimum weight
-        next_weights.sort(key=lambda idx: idx[0])
-        best_weight, best_next = next_weights[0]
-        cell.best_next = best_next
+        func = lambda nc: nc[0]
+        next_cost, next_fg = min(next_costs, key=func)
+        fg_node.next_transfer = next_fg
 
-        return (cell.weight + best_weight, cell)
+        return (cell.cost + next_cost, fg_node)
+
+    def _update_two(self, cur_time):
+       for cell_id, cell in self.cells["all"].items():
+            # Handle cell actions
+            if cell.type == "cell":
+                widget = cell.head()
+                if cell.status == "idle":
+                    if isinstance(widget, CustomWidget):
+                        widget_op = widget.feasible_ptr.op 
+                        cell.op_start_time = cur_time
+                        cell.status = "operational"
+                        cell.action = widget_op.name
+                    else:
+                        cell.action = "NOP"
+
+                if cell.status == "operational":
+                    widget_op = widget.feasible_ptr.op
+                    if cur_time - cell.op_start_time >= widget_op.duration:
+                        widget.completed_ops.append(widget.feasible_ptr.op)
+                        cell.status = "waiting"
+
+                if cell.status == "waiting":
+                    if self._try_transfer(cell):
+                        cell.action = "transfer"
+                        cell.status = "idle"
+                    else:
+                        cell.action = "NOP"
+
+                # Transfer from conveyor to cell
+                if len(cell._queue) < cell._queue.maxlen:
+                    func = lambda c: c.wait_time
+                    conv = max(cell.get_prevs(), key=func)
+                    if self._try_transfer(conv):
+                        conv.action = "transfer"
+
+            # Handle conveyor actions
+            elif cell.type == "conveyor":
+                widget = cell.head()
+                if isinstance(widget, CustomWidget):
+                    cell.wait_time += 1
+                    if cell.action == "move":
+                        cell.action = "NOP"
+                else:
+                    cell.wait_time = 0
+                    cell.action = "move"
+
+            # Handle source actions
+            elif cell.type == "source":
+                cell.widget_inst = None
+                widget = cell.head()
+                if isinstance(widget, CustomWidget):
+                    if self._try_transfer(cell):
+                        cell.action = "transfer"
+                    else:
+                        cell.action = "NOP"
+                else:
+                    cell.action = "instantiate"
+                    req_name = self._req_keys[self._req_which]
+                    self._req_which = (self._req_which + 1) % len(self._req_keys)
+
+                    new_widget = CustomWidget(req_name)
+                    new_widget.feasible_ptr = self._feasible_graphs[req_name].root
+                    new_widget.processing_time = cur_time
+                    self._widgets[new_widget.id] = widget
+                    cell.widget_inst = new_widget
+
+                    # Update metrics data
+                    self.metrics.update_metrics_instantiation(new_widget)
+
+            # Handle sink actions
+            elif cell.type == "sink":
+                widget = cell.head()
+                if isinstance(widget, CustomWidget):
+                    cell.action = "terminate"
+                    self._widgets.pop(widget.id)
+                    widget.plant_path.append(widget.feasible_ptr.name)
+                    widget.processing_time = cur_time - widget.processing_time
+                    
+                    # Add widget to completed list
+                    req_dict = self._completed[widget.req_name]
+                    path = tuple(widget.plant_path)
+                    if path not in req_dict:
+                        req_dict[path] = [widget]
+                    else:
+                        req_dict[path].append(widget)
+                    
+                    # Update metrics data
+                    self.metrics.update_metrics_termination(widget)
+
+                else:
+                    cell.action = "NOP"
+                    
+                # Transfer from conveyor to cell
+                if len(cell._queue) < cell._queue.maxlen:
+                    func = lambda c: c.wait_time
+                    conv = max(cell.get_prevs(), key=func)
+                    if self._try_transfer(conv):
+                        conv.action = "transfer"
+                
+    def _try_transfer(self, cell):
+        widget = cell.head()
+        if isinstance(widget, type(None)):
+            return False
+
+        next_transfer = widget.feasible_ptr.next_transfer.reference
+        if next_transfer.can_enqueue():
+            cell.next_transfer = next_transfer
+            widget.plant_path.append(widget.feasible_ptr.name)
+            widget.feasible_ptr = widget.feasible_ptr.next_transfer
+            return True
+        else:
+            return False
 
     # FIXME add a master_source/master_sink at some point
     def _generate_feasibility_graphs(self, requirements):
         feasible_graphs = {}
         for name, requirement in requirements.items():
-            fg = FeasibilityGraph(name)
-
-            visited_cells = {}
+            fg = FeasibilityGraph(requirement.name)
 
             # FIXME for now have one source
-            sources = self._network.process_network_command("plant", "query_cells",
-                    "source")
-            #sources = self.plant.cells["source"]
+            sources = self.cells["source"]
             assert(len(sources) == 1)
             source = sources[0]
 
+            visited_cells = {}
             root = self._generate_feasible_graph(requirement.root, source,
                                                  visited_cells, 0, fg)
             assert(len(root) == 1)
@@ -245,7 +232,7 @@ class Controller(GenericController):
         # Check if requirement operation satisfied
         req_nexts = [req]
         req_sat = False
-        if not cell.type is "conv" and req.op in cell.ops:
+        if not cell.type is "conveyor" and req.op in cell.ops:
             req_nexts.extend(req.get_nexts())
             req_sat = True
 
@@ -277,7 +264,7 @@ class Controller(GenericController):
 
         feasible_graphs = []
         if len(feasible_skip_graphs) > 0:
-            fg_node = FeasibilityNode(cell, "NOP", not cell.type is "conv")
+            fg_node = FeasibilityNode(cell, "NOP", not cell.type is "conveyor")
             fg.add_graph_nodes(fg_node)
             
             for graph in feasible_skip_graphs:
@@ -304,10 +291,9 @@ class FeasibilityNode(GenericGraphNode):
     def __init__(self, reference, op, skip=False):
         super().__init__(reference.name)
 
-        self._reference = reference
-        self.best_next = None
+        self.reference = reference
+        self.next_transfer = None
         self.op = reference.ops[op]
-        self.weight = 0
 
         self.dot_attrs["style"] = "filled"
         if not skip:
