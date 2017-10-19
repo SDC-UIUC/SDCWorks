@@ -16,6 +16,6 @@ and monitoring.
 
 The repository is divide into three directories: [examples](examples/) contains
 a few examples on help getting started; [paper](paper/) contains the paper
-submitted to ICCPS 2017; and lastly, [src](src/) contains all the source code
+submitted to ICCPS 2018; and lastly, [src](src/) contains all the source code
 for the implement simulator. More information on running the program can be found 
 in the [src](src/) directory.
