@@ -8,6 +8,9 @@ ONE_CELL = "../../examples/one-cell"
 BRANCH = "../../examples/single-branch"
 BRANCH_MULT = "../../examples/single-branch-add-one"
 
+FONT_SIZE = 22
+TICKS_SIZE = 18
+
 def plot_data(dir):
     # Directories and files
     data_dir = os.path.join(dir, "data")
@@ -33,9 +36,11 @@ def plot_data(dir):
 
     plt.figure(0)
     plt.plot(time, widgets)
-    plt.xlabel("Time (s)")
-    plt.ylabel("# of live widgets")
-    plt.title("Live widgets vs. time")
+    plt.xlabel("Time (s)", fontsize=FONT_SIZE)
+    plt.ylabel("# of live widgets", fontsize=FONT_SIZE)
+    plt.xticks(fontsize=TICKS_SIZE)
+    plt.yticks(fontsize=TICKS_SIZE)
+    plt.title("Live widgets vs. time", fontsize=FONT_SIZE)
     plt.savefig(total_widgets_plot)
     plt.clf()
 
@@ -49,10 +54,12 @@ def plot_data(dir):
         time = req_data[:, 0]
         tp = req_data[:, 1]
         plt.plot(time, tp, label=req_name)
-    plt.xlabel("Time (s)")
-    plt.ylabel("Throughput (JPH)")
-    plt.title("Average throughput vs. time")
-    plt.legend(loc="lower right")
+    plt.xlabel("Time (s)", fontsize=FONT_SIZE)
+    plt.ylabel("Throughput (JPH)", fontsize=FONT_SIZE)
+    plt.xticks(fontsize=TICKS_SIZE)
+    plt.yticks(fontsize=TICKS_SIZE)
+    plt.title("Average throughput vs. time", fontsize=FONT_SIZE)
+    plt.legend(loc="lower right", fontsize=FONT_SIZE)
     plt.savefig(throughput_plot)
     plt.clf()
 
@@ -66,10 +73,12 @@ def plot_data(dir):
         time = req_data[:, 0]
         ete = req_data[:, 1]
         plt.plot(time, ete, label=req_name)
-    plt.xlabel("Time (s)")
-    plt.ylabel("End-to-end delay (s)")
-    plt.title("Average end-to-end-delay vs. time")
-    plt.legend(loc="lower right")
+    plt.xlabel("Time (s)", fontsize=FONT_SIZE)
+    plt.ylabel("End-to-end delay (s)", fontsize=FONT_SIZE)
+    plt.xticks(fontsize=TICKS_SIZE)
+    plt.yticks(fontsize=TICKS_SIZE)
+    plt.title("Average end-to-end-delay vs. time", fontsize=FONT_SIZE)
+    plt.legend(loc="lower right", fontsize=FONT_SIZE)
     plt.savefig(end_to_end_plot)
     plt.clf()
 
@@ -77,5 +86,6 @@ def plot_data(dir):
 
 
 if "__main__" == __name__:
+    plot_data(ONE_CELL)
     plot_data(BRANCH)
     plot_data(BRANCH_MULT)

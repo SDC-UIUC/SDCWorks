@@ -1,0 +1,65 @@
+%\documentclass[sigconf, anonymous]{acmart}
+\documentclass[conference]{IEEEtran}
+%\usepackage[utf8]{inputenc}
+
+
+%% 1. usepackage should go into "usepackages.tex"
+%% 2. newcommand should be defined in "newcommands.tex"
+\input{usepackages}
+\input{newcommands}
+%\usepackage{paralist}
+\input{prelude1}
+\captionsetup{font=small,skip=5pt}
+%\usepackage{graphicx}
+
+%\newcommand{\sayan}[1]{\textcolor{blue}{#1}}
+\IEEEoverridecommandlockouts
+\begin{document}
+
+\title{SDCWorks: A Formal Framework for Software Defined Control  of Smart Manufacturing Systems
+\thanks{We thank Kira Barton, Felipe Lopez, James Moyne and Miguel Saez for many detailed discussions and providing valuable inputs on the SDC visions and manufacturing systems. This work was supported by NSF CPS Frontier grant NSF CPS 1544901.}}
+\author{\IEEEauthorblockN{Matthew Potok\IEEEauthorrefmark{1}, Chien-Ying Chen\IEEEauthorrefmark{2}, Sayan Mitra\IEEEauthorrefmark{1} and Sibin Mohan\IEEEauthorrefmark{2}}
+	\IEEEauthorblockA{
+		\IEEEauthorrefmark{1}Dept. of Electrical and Computer Engineering, 
+		\IEEEauthorrefmark{2}Dept. of Computer Science\\
+		%Coordinated Science Laboratory\\
+		University of Illinois at Urbana-Champaign, Urbana, IL 61801, USA\\
+		\texttt{ \{potok2,cchen140,mitras,sibin\}@illinois.edu}}
+}
+
+\maketitle
+
+% CY: for page numbers
+\thispagestyle{plain}
+\pagestyle{plain}
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\input{Sections/intro}
+\input{Sections/background}
+\input{Sections/preliminaries}
+\input{Sections/model}
+\input{Sections/controller}
+\input{Sections/properties}
+\input{Sections/approach}
+\input{Sections/smart}
+\input{Sections/simulation}
+\input{Sections/case_study}
+\input{Sections/conclusion}
+
+%\subsection*{Acknowledgements}
+
+
+%\pagebreak
+%\newpage
+%\IEEEtriggeratref{10}
+%\bibliographystyle{plain}
+\bibliographystyle{IEEEtran}
+%\bibliographystyle{abbrv}
+%\bibliographystyle{ACM-Reference-Format}
+
+\bibliography{ref,sayan1,routing,dawnrefs,miguel-refs,morerefs,sibin.sdn,sibin.sdc}
+
+\end{document}

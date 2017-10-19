@@ -1,5 +1,5 @@
-from simulator.controller import Controller
-from simulator.network import Network
+from custom.controller import CustomController
+from simulator.metrics import Metrics
 from simulator.plant import Plant
 from simulator.requirements import Requirements
 from simulator.simulator import Simulator
@@ -12,9 +12,9 @@ import pdb
 
 
 def usage():
-    ustr = ("Usage: python3 main.py -a <algorithm> -d <directory>\n",
-            "\n",
-            "\t-d, --directory\t\tdirectory where files are located\n",
+    ustr = ("Usage: python3 main.py -a <algorithm> -d <directory>\n"
+            "\n"
+            "\t-d, --directory\t\tdirectory where files are located\n"
             )
     print(ustr)
 
@@ -30,6 +30,11 @@ def main(dir_idx=None):
         print(err)
         usage()
         sys.exit(2)
+
+    # Print help if no arguments
+    if len(opts) == 0:
+        usage()
+        sys.exit()
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -48,13 +53,12 @@ def main(dir_idx=None):
     
     # Initialize classes
     requirements = Requirements(requirements_yaml)
-    network = Network()
+    metrics = Metrics(directory, requirements) 
 
-    controller = Controller(network, requirements)
-    plant = Plant(plant_yaml, network)
+    plant = Plant(plant_yaml, requirements)
+    controller = CustomController(requirements, plant, metrics)
 
-    #algorithm = algorithms[algo_key](plant, requirements)
-    simulator = Simulator(plant, controller, requirements, directory)
+    simulator = Simulator(plant, controller, requirements, metrics, directory)
 
     # Simulate system
     END_TIME = 10000

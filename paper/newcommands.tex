@@ -1,0 +1,144 @@
+%% --------------------- Start Some definitions to make life easier -----------------------------
+\newcommand{\da}{\downarrow}
+\newcommand{\la}{\leftarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\lla}{\longleftarrow}
+\newcommand{\llra}{\longleftrightarrow}
+\newcommand{\lra}{\longrightarrow}
+\newcommand{\Lla}{\Longleftarrow}
+\newcommand{\Llra}{\Longleftrightarrow}
+\newcommand{\Lra}{\Longrightarrow}
+\newcommand{\ua}{\uparrow}
+
+\newcommand{\nea}{\nearrow}
+\newcommand{\nwa}{\nwarrow}
+\newcommand{\sea}{\searrow}
+\newcommand{\swa}{\swarrow}
+
+\newcommand{\mf}{\mathbf}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mi}{\mathit}
+%\newcommand{\ul}{\underline}
+\newcommand{\ol}{\overline}
+
+\newcommand{\eg}{{\it e.g.,}\xspace}
+\newcommand{\viz}{{\it viz.,}}
+\newcommand{\Eg}{{\it E.g., }}
+\newcommand{\etal}{{\it et~al.}}
+\newcommand{\ie}{{\it i.e.,}\xspace}
+\newcommand{\Ie}{I.e.,\xspace}
+\newcommand{\etc}{{\it etc.~}}
+\newcommand{\ci}{{\it (i) }}
+\newcommand{\cii}{{\it (ii) }}
+\newcommand{\ciii}{{\it (iii) }}
+\newcommand{\civ}{{\it (iv) }}
+\newcommand{\cv}{{\it (v) }}
+\newcommand{\cvi}{{\it (vi) }}
+\newcommand{\ca}{{\it (a) }}
+\newcommand{\cb}{{\it (b) }}
+\newcommand{\cc}{{\it (c) }}
+\newcommand{\cd}{{\it (d) }}
+\newcommand{\ce}{{\it (e) }}
+\newcommand{\cf}{{\it (f) }}
+\newcommand{\cg}{{\it (g) }}
+\newcommand{\ch}{{\it (h) }}
+%\newcommand{\ci}{{\it (i) }}
+\newcommand{\cj}{{\it (j) }}
+\newcommand{\ck}{{\it (k) }}
+\newcommand{\cl}{{\it (l) }}
+\newcommand{\cm}{{\it (m) }}
+\newcommand{\cn}{{\it (n) }}
+\newcommand{\co}{{\it (o) }}
+\newcommand{\cp}{{\it (p) }}
+\newcommand{\cq}{{\it (q) }}
+\newcommand{\Note}{{\bf Note: }}
+
+% CY: This is for the Example items.
+%\usepackage{amsthm}
+%\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+%\setcounter{example}{1}
+%\newtheorem{remark}{Remark}
+%\newtheorem{corollary}{Corollary}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{principle}[definition]{Principle}
+%\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+
+% CY: to make the square solid
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% This is for supporting algorithm lines without showing line numbers.
+\newcommand\StateX{\Statex\hspace{\algorithmicindent}}
+
+
+%%%%% Commands added by Potok %%%%%
+% Operations
+\newcommand{\OP}{\mathit{OP}}
+\newcommand{\OPALL}{\overline{\OP}}
+\newcommand{\op}{\mathit{op}}
+\newcommand{\optop}{\op_\top}
+\newcommand{\opbot}{\op_\bot}
+\newcommand{\move}{\mathit{move}}
+\newcommand{\transfer}{\mathit{transfer}}
+\newcommand{\noop}{\mathit{noop}}
+
+% Cells
+\newcommand{\verttop}{\mathit{v}_\top}
+\newcommand{\vertbot}{\mathit{v}_\bot}
+
+% Widgets
+\newcommand{\Wtop}{\mathit{W}_\top}
+\newcommand{\Wbot}{\mathit{W}_\bot}
+\newcommand{\Word}{\mathit{W}_\circ}
+
+% Plant functions
+\newcommand{\Lmap}{\mathit{L}}
+\newcommand{\Tmap}{\mathit{T}}
+\newcommand{\Qmap}{\mathit{Q}}
+\newcommand{\Rmap}{\mathit{R}}
+
+% Plant variables
+\newcommand{\loc}{\mathit{loc}}
+\newcommand{\pos}{\mathit{pos}}
+\newcommand{\status}{\mathit{status}}
+\newcommand{\queue}{\mathit{queue}}
+\newcommand{\timer}{\mathit{timer}}
+\newcommand{\operational}{\mathit{operational}}
+\newcommand{\idle}{\mathit{idle}}
+\newcommand{\waiting}{\mathit{waiting}}
+
+% Miscellaneous operations/variables
+\newcommand{\head}{\mathit{head}}
+\newcommand{\pop}{\mathit{pop}}
+\newcommand{\len}{\mathit{len}}
+\newcommand{\prev}{\mathit{prev}}
+\newcommand{\bag}{\mathit{bag}}
+\newcommand{\Bag}{\mathit{Bag}}
+\newcommand{\trytransfer}{\mathit{try\_transfer}}
+
+% Controller variables
+\newcommand{\action}{\mathit{action}}
+\newcommand{\celltype}{\mathit{celltype}}
+\newcommand{\completed}{\mathit{completed}}
+\newcommand{\cost}{\mathit{cost}}
+\newcommand{\nexttr}{\mathit{next\_tr}}
+\newcommand{\req}{\mathit{requirement}}
+\newcommand{\starttime}{\mathit{start\_time}}
+\newcommand{\canenqueue}{\mathit{can\_enqueue}}
+\newcommand{\waittime}{\mathit{wait\_time}}
+\newcommand{\widgettime}{\mathit{widget\_time}}
+\newcommand{\ptr}{\mathit{pointer}}
+
+% General
+\newcommand{\True}{\mathsf{T}}
+\newcommand{\False}{\mathsf{F}}
+\newcommand{\potok}[1]{\textcolor{teal}{#1}}
+\newcommand{\cy}[1]{\textcolor{brown}{#1}}
+\newcommand{\rednote}[1]{\textcolor{red}{#1}}
+
+% Plan
+\newcommand{\plan}{\mathit{C}}
+\newcommand{\mfname}{SDCWorks\xspace}

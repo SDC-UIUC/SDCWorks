@@ -1,30 +1,33 @@
+from collections import OrderedDict
 from parser.parser import parse_requirements
-from generic.graph import Graph, GraphNode
-from uuid import uuid4
+from generic.graph import GenericGraph, GenericGraphNode
 
 import pdb
 
-class Requirements(list):
+class Requirements(OrderedDict):
     def __init__(self, req_yaml):
-        list.__init__(self)
+        super().__init__(self)
 
         # Parse requirement YAML
         reqs_data = parse_requirements(req_yaml)
-
         for req_data in reqs_data:
             requirement = Requirement(**req_data)
-            self.append(requirement)
+            
+            if requirement.name in self:
+                err_str = (
+                    "Key " + requirement.name + " already exists. "
+                    "Requirement names must be unique\n"
+                )
+                raise KeyError(err_str)
 
-class Requirement(Graph):
+            self[requirement.name] = requirement
+
+class Requirement(GenericGraph):
     def __init__(self, name="", nodes=None, root=None, edges=None):
         super().__init__(name)
 
-        #self.id = str(uuid4())
-        self.id = name
-
-        reqs_dict = {}
-
         # Add nodes
+        reqs_dict = {}
         req_nodes = []
         for node in nodes:
             req_node = RequirementNode(node[0], op=node[1])
@@ -45,7 +48,7 @@ class Requirement(Graph):
                     next = reqs_dict[next]
                     self.add_graph_edges(req, next)
 
-class RequirementNode(GraphNode):
+class RequirementNode(GenericGraphNode):
     def __init__(self, name="", label="", op=None):
         super().__init__(name, label)
 

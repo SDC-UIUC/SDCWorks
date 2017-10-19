@@ -1,3 +1,5 @@
+from simulator.operations import Operations
+
 import yaml
 
 # TODO comment me
@@ -58,53 +60,29 @@ def _parse_cell(cell_dict):
         raise KeyError("No key '%s' in %s" % (key, cell_dict))
 
     name = cell_dict["name"]
+    length = 1
+    if "length" in cell_dict:
+        length = cell_dict["length"]
 
     # Cell
-    ops = {}
+    ops = set()
     if "operations" in cell_dict:
-        for op in cell_dict["operations"]:
-            op_name = op[0]
-            op_dur = op[1]
-            ops[op_name] = op_dur
+        ops = Operations(cell_dict["operations"])
 
     cell_attrs = {
         "name": name,
+        "length": length,
         "ops":  ops,
     }
 
     return cell_attrs
 
 def _parse_source(source_dict):
-    """
-    keys = ["name", "spawn_time_type", "spawn_req_type"]
-    for key in keys:
-        if key not in source_dict:
-            raise KeyError("No key '%s' in %s" % (key, source_dict))
-    
-    spawn_attrs = { 
-        "spawn_time_type": source_dict["spawn_time_type"],
-        "spawn_req_type": source_dict["spawn_req_type"],
-    }
-
-    if spawn_attrs["spawn_time_type"] == "constant":
-        spawn_attrs["spawn_time_interval"] = source_dict["spawn_time_interval"]
-
-    if spawn_attrs["spawn_req_type"] == "round-robn":
-        spawn_attrs["req_idx"] = 0
-
-    source_attrs = {
-        "name": source_dict["name"],
-        "spawn_attrs": spawn_attrs,
-        "ops": { "INSTANTIATE": 0 }
-    }
-    """
-
     keys = ["name"]
     for key in keys:
         if key not in source_dict:
             raise KeyError("No key '%s' in %s" % (key, source_dict))
 
-    source_dict["ops"] = { "INSTANTIATE": 0 }
     return source_dict
 
 def _parse_sink(sink_dict):
@@ -113,19 +91,17 @@ def _parse_sink(sink_dict):
         if key not in sink_dict:
             raise KeyError("No key '%s' in %s" % (key, sink_dict))
 
-    sink_dict["ops"] = { "TERMINATE": 0 }
     return sink_dict
        
 def _parse_conveyor(conv_dict):
     # Check keys
-    keys = ["length", "prev", "next"]
+    keys = ["prev", "next"]
     for key in keys:
         if key not in conv_dict:
             raise ValueError("No key '%s' in '%s'" % (key, conv_dict))
 
     return conv_dict
 
-# FIXME return source info as well
 def parse_requirements(req_yaml):
     # Read and parse YAML
     try:

@@ -1,0 +1,58 @@
+\subsection{Rigorous Reasoning about Properties}
+\label{sec:prop}
+Our \mfname framework is designed to support rigorous analysis of correctness and performance properties of the system. The formal framework will support standard reasoning in terms of invariants, abstractions,  substitutivity and will be eventually supported by  computer-aided verification tools~\cite{IOA89}.
+%
+While a full verification of our baseline controller is beyond the scope of the current paper, we present several key assertions and arguments to sketch the outline of a correctness argument. Additionally, the baseline controller we present here uses a subset of the global view available to it and makes decisions based on a local level. Much more complex controllers can be implemented with \mfname such as those presented in literature~\cite{Taylor2015}.
+
+The following invariant  captures the mutual exclusion property and ensures that there is no ``pile-up'' of widgets on cell and conveyors. 
+\begin{proposition}
+\label{prop:mutex}
+ For any ordinary cell $v \in V_P\setminus \{\verttop,\vertbot\}$, and any two distinct widgets $w_1, w_2 \in W$,
+ if $w_1, w_2 \in \bag(v)$ then $\pos(w_1) \neq \pos(w_2)$.
+ \end{proposition}	
+This invariant is  proved by induction on  the length of any execution of the $\dst$. 
+The base case (an execution of length $0$) holds vacuously, because at any  initial state of $\dst$, all the widgets are at the source $\verttop$. For the inductive step, we check for each possible plant and controller transition to verify that the invariant is preserved. This involves a case analysis across all the {\bf if\/} conditions in \figref{plant-transitions} and \figref{controller-transitions}. The $\canenqueue$ variable restricts the $\transfer$ action from occurring unless there is an empty space at the end of the queue for any cell.
+
+The following invariant  captures the correctness property that ensures that only complete widgets appear at the sink.
+\begin{proposition}
+	\label{prop:completeness}
+	For any sink $\vertbot$, and any widget $w \in \bag(\vertbot)$, the widget is completed, i.e., 
+	$\completed(v)$ is a path in $\req(w)$. 
+\end{proposition}
+This invariant is derived from a stronger invariant that captures the relationship between the $\completed(v)$ variable and the position of the widget and the feasible graph. 
+Roughly, a widget $w$ with requirement $R$ follows a path in the plant following only the nodes of a feasible graph $F_{R,P}$. From Proposition~\ref{prop:paths} it follows that, as $w$  traverses the plant from a source $\verttop$ to a sink $\vertbot$ it must follows a path in $G_R$, and therefore, when it appears at $\vertbot$ it is complete. 
+
+The next proposition  captures the  property that all widgets complete within bounded time for any plant that is a directed acyclic graph (DAG). 
+\begin{proposition}
+	\label{prop:timebound}
+For any acyclic requirement and any widget $w\in V_o$, there exists a $k>0$ such that if $\widgettime(w) \geq k$ then $w \in \bag(\vertbot)$.
+\end{proposition}
+%All widget must go through the system in finite time
+Since $G_P$ has finite depth in this case, the property is established by  showing that $w$ traverses an edge from $loc(w)$ in the plant graph $G_P$ in finite time. 
+%
+For plants with cycles, this property may not hold with our baseline controller as widgets may deadlock.
+%Sketch of proof: This will depend on how the controller tells cells to enqueue their widgets unto the next cell. I am considering the notion of first come, first serve. Suppose that there are two conveyors, $c1, c2$ that feed into a single machine and that at time $t$, both conveyors get a widget in the head of the queue. Whenever a widget is pushed to the head, it is assigned a $waiting\_time$ of how long it has been waiting in the head to be enqueued. The controller will select to enqueue the widget from the conveyor whose waiting time is greater. In the case of ties, the controller, can randomly select the widget to be enqueued.
+
+%List of properties that the controller should satisfy and ideas for how to prove these
+%\begin{enumerate}
+%	\item Given a widget assigned requirement $R$, after the widget has passed through the plant from the source to the sink, the list of its completed operations should match one of the paths of the widget's corresponding requirement.
+%    
+%    Sketch of proof: The proof will make use of FeasibleGraphs. Each path in the feasible graph is a path through the plant that satisfies all the operations and their orderings as specified by requirement $R$. Feasible Graphs are computed by using a graph matching algorithm. 
+    
+%    \item  
+%\end{enumerate}
+
+
+%\subsection{Formal}
+%Formally defining the properties:
+%\begin{enumerate}
+%	\item Correctness: $\forall v \in \bag(\vertbot) \Rightarrow \completed(v) \in \req(v)$ 
+%    The list of operations completed by all widgets in the completed pool should satisfy their corresponding requirement. 
+%    
+%    
+%    \item Completeness: $\forall w \in \bag(\verttop) \Rightarrow \widgettime(w) \leq T_R$
+%    For each completed widget, the total time it took to travel through the plant should be bounded by some time $T_R$.
+%    
+%   
+%\end{enumerate}
+

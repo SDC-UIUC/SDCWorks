@@ -1,0 +1,5 @@
+	Controller Transitions:
+		for each $v \in V$
+			$\action(v) := \mi{cell_decision}(v)$
+			$\cost(v) := \mi{userDefinedCost(v)}$
+			$\nexttr(v) := \argmin{cost(v')}{v' \in next(v)}$

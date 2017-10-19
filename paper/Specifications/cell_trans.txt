@@ -1,0 +1,65 @@
+	Controller Transitions:
+		$\timer = \timer + 1$
+		for each $v \in V$
+			$\cost(v) := \mi{userDefinedCost(v)}$
+            
+		for each $F_r \in \mathcal{F}$
+			$\mathsf{ShortestPathFirst}(F_r)$
+            
+		for each $v \in V$
+			$\nexttr(\ptr(v)) := \argmin{cost(v')}{v' \in \next(\ptr(v))}$ 
+        
+			if $\celltype(v) = \mi{conveyor}$ then
+				if $\exists w \in \head(\queue(v))$ then
+					$\waittime(v) = \waittime(v) + 1$
+				else
+					$\action(v) = \move$
+  
+			if $\celltype(v) = \mi{source}$ then
+				if $\exists w \in \head(\queue(v))$ then
+					$\trytransfer(v)$
+				else
+					$\action(v) := \optop$
+
+			if $\celltype(v) = \mi{cell}$ then
+				if $\status(v) = \idle$ then
+					if $\exists w \in \head(\queue(v))$ then
+						if $\op(\ptr(v)) = \noop$ then
+							$\trytransfer(v)$
+						else
+							$\starttime(v) := \timer$
+							$\status(v) := \operational$
+							$\action(v) := \oplus(\ptr(v))$
+					else
+						$\action(v) := noop$                       
+				if $\status(v) = \operational$ then
+					if $\timer - \starttime(v) >= \Tmap(v, \op(\ptr(v))$
+						$\completed := \completed + \op(\ptr(v))$
+						$\status(v) := \waiting$
+					else
+						$\action(v) := \op(\ptr(v))$
+				if $\status(v) = \waiting$ then
+					$\trytransfer(v)$
+					if $\exists w \not\in \head(\queue(v))$ then
+						$\status(v) := \idle$
+				if $\canenqueue(v)$ then
+					$v' := \max \waittime(\prev(v))$
+					$\action(v') := \transfer$
+                
+			if $\celltype(v) = \mi{sink}$ then
+				if $\exists w \in \head(\queue(v))$ then
+					$\action(v) := \opbot$
+				else
+					$\action(v) := \noop$
+                    
+			if $\len(queue(v)) < \Qmap(v)$ then
+				$\canenqueue(v) = \True$
+			else
+				$\canenqueue(v) = \False$
+                    
+		func $\trytransfer(v)$ 
+			if $\canenqueue(\nexttr(v))$ then
+				$\action(v) := transfer$
+				$\nexttr(v) = \nexttr(\ptr(v))$
+			else
+				$\action(v) := \noop$

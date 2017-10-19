@@ -1,0 +1,6 @@
+	Plant Variables:
+		$\loc: W \mapsto V \cup \{\verttop, \vertbot\}$
+		$\pos: W \mapsto \mathbb{N}$
+		$\queue: V \mapsto \mathsf{Array}[W \cup \bot]$
+		$\req: R \mapsto W$
+		$\widgettime: W \mapsto \mathbb{N}$, init $\forall w \in W \widgettime(w) := 0$

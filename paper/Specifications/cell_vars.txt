@@ -1,0 +1,11 @@
+	Controller Variables:
+		$\action: V \mapsto \OPALL \cup \{\move, \noop\}$
+		$\canenqueue: V \mapsto \{\True, \False\}$
+		$\completed: W \mapsto OP^*$
+		$\cost: V \mapsto \mathbb{R}$
+		$\nexttr: V \mapsto V$       
+		$\ptr: V \mapsto V_{F_{R,P}}$
+		$\starttime: V \mapsto \mathbb{N}$, init $\forall v \in V \starttime(v) := 0$
+		$\status: V \mapsto \{\idle, \operational, \waiting\}$
+		$\timer: \mathbb{N}$, init $\timer := 0$
+		$\waittime: V \mapsto \mathbb{N}$

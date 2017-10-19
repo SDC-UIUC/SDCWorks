@@ -1,0 +1,34 @@
+% Move these over
+\newcommand{\dst}{\mathcal{H}}
+
+\section{\mfname Modeling Framework}
+\subsection{Semantic Underpinnings}
+We will use variables to model different state components of the plant and the controller. Each variable $v$ has an associated type denoted by $type(v)$ that is the set of values that $x$ can take.
+Let $X$ be a set of variables. 
+%
+A {\em valuation\/} for $X$ is a function that maps each variable name $v \in X$ to a value in $type(v)$. The set of all possible valuations of $X$ is denoted by $val(X)$. 
+Given a valuation  $x \in val(X)$, its restriction to a set of variables, $S \subseteq X$, is denoted by $x.S$. 
+%(or states) of a set of variables $X$ is denoted by $val(X)$.
+
+The overall system with a plant and a controller will be modeled as a \emph{discrete transition system\/}.
+Formally, a transition system $\dst$  is a tuple $\langle X, \Theta, A, D \rangle$ where 
+\begin{enumerate*}[label=(\roman*)]
+	\item $X$ is a finite set of variables partitioned into $X= X_c \cup X_p$ sets of controller and plant variables; the set $val(X)$ of valuations of $X$ is called the set of {\em states.} 
+    \item $\Theta \subseteq val(X)$ is a set of initial states, 
+    \item $A$ is a finite set of actions partitioned into $A = A_c \cup A_p$ disjoint sets of controller and plant actions, and
+    \item $D \subseteq val(X) \times A \times val(X)$ is the set of discrete state transitions. An individual transition  $(x, a, x') \in D$ is written as $x \arrow{a} x'$.
+\end{enumerate*}
+For a given state $x \in val(X)$, $x.X_p$ and $x.X_c$ are said to be the  plant and controller state at $x$.  
+%
+The plant variables ($X_P$) are read/write variables for the plant actions ($A_p$) and are only read by the controller actions ($A_c$).
+That is, for any $x\arrow{a}x'$ with $a \in A_p$, $x.X_c = x'.X_c$.  
+%
+Similarly, the controller variables ($X_c$) are 
+read/write variables for the controller actions ($A_c$) and are only read by the plant  actions ($A_p$).
+
+An \emph{execution} of  $\dst$ is an sequence of states and transitions with plant and controller transitions alternating: $\alpha = x_0, a_1, x_1, a_2, x_2 \cdots$, where $x_0 \in \Theta$ and  $a_i \in A_c$  for  each odd $i$ and $a_i \in A_p$ for each even $i$ in the sequence.
+A state $x$ is {\em reachable} if every there exists an execution that ends in $x$. 
+Any set $I \subseteq val(X)$ that contains all the reachable states of $\dst$ is called an {\em invariant\/}. 
+Invariants capture properties that must {\em always} hold for the system and can be stated in terms of plant and controller variables. 
+
+

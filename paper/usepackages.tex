@@ -1,0 +1,87 @@
+% This is to fix the problem of IEEEtran. 
+% \labelindent command exists for legacy reasons in the IEEE template.
+%\let\labelindent\relax
+
+% CY: for customizing item symbols.
+
+\usepackage[inline]{enumitem}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm} % for proof
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{boxedminipage}
+\usepackage{epsfig}
+\usepackage{psfrag}
+\usepackage{url}
+\usepackage{comment}
+\usepackage{afterpage}
+%\usepackage{cite}
+\usepackage{pstricks}
+\usepackage{graphics}
+
+% #### CY: I disable mathenv for enabling tabularx
+%\usepackage{mathenv}
+
+\usepackage{mdwtab}
+%\usepackage{floatflt}
+\usepackage{wrapfig}
+\usepackage{graphics}
+
+\usepackage{algorithm}  
+\usepackage{algorithmic} 
+%\usepackage{algorithmicx}
+%\usepackage{algpseudocode}
+%\usepackage{algpseudocode}
+
+%\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+%\usepackage[linesnumbered, ruled]{algorithm2e}
+%\SetKwRepeat{Do}{do}{while}
+
+% Added by CY
+%\usepackage{algpseudocode}
+\usepackage{amssymb} % for \triangleq denotation in the appendix
+
+% CY: for multi-line in tables
+\usepackage{makecell}
+
+
+% CY: for double line in tables
+\usepackage{hhline}
+
+% CY: for easier making tables
+\usepackage{tabularx}
+
+% CY: for colorful table.
+%\usepackage[table,xcdraw]{xcolor}
+
+% For hyperlink
+\usepackage{hyperref}
+
+\usepackage{epsfig}
+%\usepackage{caption}
+\usepackage{fixfoot}
+%\usepackage{footmisc}
+%\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{psfrag,wrapfig}
+\usepackage{xspace,soul}
+%\usepackage[small,compact]{titlesec}
+%\usepackage[disable]{todonotes}
+\usepackage[colorinlistoftodos]{todonotes}
+%\usepackage{palatino}
+
+% This package is for fixing "! No room for a new \dimen ." error. by CY
+%\usepackage{etex}
+
+
+%\usepackage{subfigure}	% CY: this is deprecated. Use subcaption instead
+% This package is for \captionsetup used in figures.
+%\usepackage{caption}
+\usepackage{subcaption}
+
+% CY: for figure and table side by side 
+% \usepackage{floatrow}
+% % Table float box with bottom caption, box width adjusted to content
+% \newfloatcommand{capbtabbox}{table}[][\FBwidth]

@@ -1,0 +1,4 @@
+	Abstract Controller Variables:
+		$\action: V \mapsto \OPALL$
+		$\nexttr: V \mapsto V$     
+		$\timer: \mathbb{N}$, init $\timer := 0$
