@@ -1,0 +1,68 @@
+requirements:
+    # Valid
+    - requirement:
+        name: "Req1"
+        nodes:
+            - ["INSTANTIATE", "INSTANTIATE"]
+            - ["A", "a"]
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
+        edges:
+            - ["INSTANTIATE", ["A"]]
+            - ["A", ["TERMINATE"]]
+
+    # Valid
+    - requirement:
+        name: "Req2"
+        nodes:
+            - ["INSTANTIATE", "INSTANTIATE"]
+            - ["B", "b"]
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
+        edges:
+            - ["INSTANTIATE", ["B"]]
+            - ["B", ["TERMINATE"]]
+
+    # Valid
+    - requirement:
+        name: "Req3"
+        nodes:
+            - ["INSTANTIATE", "INSTANTIATE"]
+            - ["A", "a"]
+            - ["B", "b"]
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
+        edges:
+            - ["INSTANTIATE", ["A"]]
+            - ["A", ["B"]]
+            - ["B", ["TERMINATE"]]
+
+    # Valid
+    - requirement:
+        name: "Req4"
+        nodes:
+            - ["INSTANTIATE", "INSTANTIATE"]
+            - ["A1", "a"]
+            - ["A2", "a"]
+            - ["B", "b"]
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
+        edges:
+            - ["INSTANTIATE", ["A1"]]
+            - ["A1", ["A2"]]
+            - ["A2", ["B"]]
+            - ["B", ["TERMINATE"]]
+
+    # Invalid
+    - requirement:
+        name: "Req5"
+        nodes:
+            - ["INSTANTIATE", "INSTANTIATE"]
+            - ["B", "b"]
+            - ["A", "a"]
+            - ["TERMINATE", "TERMINATE"]
+        root: "INSTANTIATE"
+        edges:
+            - ["INSTANTIATE", ["B"]]
+            - ["B", ["A"]]
+            - ["A", ["TERMINATE"]]

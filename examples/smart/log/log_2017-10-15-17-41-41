@@ -1,0 +1,1064 @@
+Time: 0.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: instantiate
+Queue: [ fc13e4c9-f379-4d1f-bbb7-f8829bdec203 ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 1.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None None None None fc13e4c9-f379-4d1f-bbb7-f8829bdec203 ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: transfer
+Queue: [ None ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 2.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None None None fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: instantiate
+Queue: [ aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 3.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None None fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: transfer
+Queue: [ None ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 4.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 None ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: instantiate
+Queue: [ 2a7c3d6a-47a9-48e1-8115-03faa6446b10 ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 5.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 None 2a7c3d6a-47a9-48e1-8115-03faa6446b10 ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: transfer
+Queue: [ None ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 6.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: NOP
+Queue: [ fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: transfer
+Queue: [ None None aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 None 2a7c3d6a-47a9-48e1-8115-03faa6446b10 ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: instantiate
+Queue: [ 8656c3cf-0be3-4509-9a7a-6e61a61faa8b ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
+Time: 7.000000
+##########
+Sink
+---------
+Action: NOP
+Queue: [ None ]
+
+Conveyor
+----------
+Prev: v1 next: Sink
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v1
+Action: transfer
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: Source next: v1
+Action: move
+Queue: [ None aaad13c9-d6b8-4a3c-9ce7-a59f7d3e5046 None 2a7c3d6a-47a9-48e1-8115-03faa6446b10 None ]
+
+Conveyor
+----------
+Prev: v3 next: v1
+Action: move
+Queue: [ None None None None None ]
+
+Source
+----------
+Action: NOP
+Queue: [ 8656c3cf-0be3-4509-9a7a-6e61a61faa8b ]
+
+Cell
+----------
+Name: v3
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v6 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v7 next: v3
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v2
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v6
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v7
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v1 next: v2
+Action: move
+Queue: [ None None None fc13e4c9-f379-4d1f-bbb7-f8829bdec203 None ]
+
+Conveyor
+----------
+Prev: v4 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v5 next: v2
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v6
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v3 next: v7
+Action: move
+Queue: [ None None None None None ]
+
+Cell
+----------
+Name: v4
+Action: NOP
+Queue: [ None None None ]
+
+Cell
+----------
+Name: v5
+Action: NOP
+Queue: [ None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v4
+Action: move
+Queue: [ None None None None None ]
+
+Conveyor
+----------
+Prev: v2 next: v5
+Action: move
+Queue: [ None None None None None ]
+##########
+
